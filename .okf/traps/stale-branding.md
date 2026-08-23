@@ -4,7 +4,9 @@ title: Stale branding
 description: ScrapyardIO / scrapyard-io literals still live in the 0.8 installer; they are leftovers, not intended product copy.
 tags: [trap, branding, scrapyard]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-status: draft
+verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
+verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+status: stable
 sources:
   - id: package-enum
     resource: src/Enums/InstallerPackage.php
@@ -21,7 +23,7 @@ sources:
 
 The package identity is `venusian/installer` / bin `venusian`. Several strings still say ScrapyardIO.[^package-enum][^watcher]
 
-Do **not** document these as the intended brand. Tests pin the current literals so a rename is a failing test, not a silent docs drift.[^enums-test]
+Do **not** document these as the intended brand. `exposes every InstallerPackage case value including leftover branding` pins `USER_AGENT` = `ScrapyardIO Installer`. The PATH error and `requireConstraint` docblock are source-only — not Pest-asserted.[^enums-test]
 
 # Current leftovers
 

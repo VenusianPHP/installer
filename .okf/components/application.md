@@ -5,7 +5,9 @@ description: Symfony Console application that offers a Packagist self-update bef
 resource: src/Console/Application.php
 tags: [component, console]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-status: draft
+verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
+verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+status: stable
 sources:
   - id: app
     resource: src/Console/Application.php

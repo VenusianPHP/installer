@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+use Venusian\Installer\Console\Application;
+use Venusian\Installer\Console\Commands\NewApplicationCommand;
+
+if (file_exists(__DIR__.'/../../../autoload.php')) {
+    require __DIR__.'/../../../autoload.php';
+} else {
+    require __DIR__.'/../vendor/autoload.php';
+}
+
+$app = new Application('Venusian PHP Application Installer', '0.8.0');
+$app->addCommand(new NewApplicationCommand);
+
+try {
+    exit($app->run());
+} catch (Throwable $e) {
+    fwrite(STDERR, $e->getMessage().PHP_EOL);
+
+    exit(1);
+}

@@ -1,0 +1,53 @@
+{
+    "name": "venusian/installer",
+    "description": "Venusian PHP application installer.",
+    "keywords": [
+        "venusian",
+        "installer"
+    ],
+    "version": "0.8.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Angel Gonzalez"
+        }
+    ],
+    "require": {
+        "php": "^8.4|^8.5|^8.6",
+        "laravel/prompts": "^0.3",
+        "projectsaturnstudios/pocketflow-php": "^0.2",
+        "symfony/console": "^7.0|^8.0",
+        "symfony/filesystem": "^7.0|^8.0",
+        "symfony/process": "^7.0|^8.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6",
+        "pestphp/pest": "^4"
+    },
+    "bin": [
+        "bin/venusian"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Venusian\\Installer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Venusian\\Installer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@php vendor/bin/pest"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -5,7 +5,9 @@ description: venusian/installer 0.8.0 — global Composer CLI that scaffolds Ven
 resource: composer.json
 tags: [orientation, installer, venusian, 0.8]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-status: draft
+verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
+verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+status: stable
 sources:
   - id: composer
     resource: composer.json
@@ -35,7 +37,7 @@ Composer package `venusian/installer` at **0.8.0** — a globally installable Sy
 | Role | Scaffold a Venusian app via `composer create-project` |
 | Skeleton | `venusian/venusian:^0.8.2` (`SkeletonPackage::VENUSIAN`)[^skeleton][^enums-test] |
 
-`.okf/`, `AGENTS.md`, and `CHANGELOG.md` are intended `export-ignore` from Composer dist (see package `.gitattributes`).
+`.gitattributes` marks these paths `export-ignore`: `/tests`, `/phpunit.xml`, `/.github`, `/.okf`, `/AGENTS.md`, `/CHANGELOG.md`. `CHANGELOG.md` is listed there but is **not** in the tree. `docs/` is also absent — see [known gaps](/known-gaps.md).
 
 # Requires (0.8)
 
@@ -63,7 +65,20 @@ Does **not** require `venusian/framework` or `venusian/probe`.[^composer]
 | `src/Console/Application.php` | `doRun` → Packagist self-update offer |
 | `src/Console/Commands/NewApplicationCommand.php` | `new` flow host |
 | `src/Enums/SkeletonPackage.php` | Skeleton Composer constraint |
-| `tests/` | Pest v4 specs mapped from this bundle |
+| `tests/` | Pest v4 specs (`pestphp/pest` `^4` in `require-dev`; resolved `v4.7.8` on this audit machine) |
+
+# Tree (measured at 693b56c)
+
+| Item | Measured |
+|------|----------|
+| `src/**/*.php` | 14 files |
+| `src/Enums/` | 3 backed enums, all cases FULLY UPPERCASE; no `const` in `src/` |
+| `tests/*Test.php` | 7 Pest spec files, 33 `it()` cases |
+| `tests/Pest.php` | Pest v4 bootstrap (`Mockery::close()` in `afterEach`) |
+| `bin/` | `bin/venusian` only |
+| `docs/` | missing (no canvas, no mermaid in `README.md`) |
+| CI | `.github/workflows/tests.yml` — PHP `8.4` and `8.5`, `vendor/bin/pest`, `actions/checkout@v7` |
+| `composer.lock` | gitignored (`.gitignore`); CI runs `composer update` |
 
 # Related
 

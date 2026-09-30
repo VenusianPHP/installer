@@ -5,8 +5,8 @@ description: Seeds the PocketFlow shared bag for `venusian new`.
 resource: src/Actions/PrepareSharedBag.php
 tags: [component, action, shared]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: bag
@@ -31,7 +31,7 @@ sources:
 
 Tests drive the callback with `ArrayInput` + `BufferedOutput` and assert the buffer is written.
 
-`actions` stays empty for the rest of the 0.8 reconstitution; see [known gaps](/known-gaps.md) and [node orchestration](/core/node-orchestration.md).
+No node writes `actions`; see [node orchestration](/core/node-orchestration.md).
 
 # Related
 

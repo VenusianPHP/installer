@@ -4,5 +4,5 @@ namespace Venusian\Installer\Enums;
 
 enum SkeletonPackage: string
 {
-    case VENUSIAN = 'venusian/venusian:^0.8.2';
+    case VENUSIAN = 'venusian/venusian:^0.10.0';
 }

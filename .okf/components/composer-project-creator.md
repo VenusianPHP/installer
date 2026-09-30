@@ -5,8 +5,8 @@ description: Builds and runs `composer create-project` for the Venusian skeleton
 resource: src/ComposerProjectCreator.php
 tags: [component, composer, create-project]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: creator
@@ -32,10 +32,10 @@ Standalone helper for `composer create-project`. The `new` flow currently duplic
 Given `$composerBinary` and `$directory`, returns:[^creator][^creator-test][^skeleton]
 
 ```
-[$composerBinary, 'create-project', 'venusian/venusian:^0.8.2', $directory, '--remove-vcs', '--prefer-dist']
+[$composerBinary, 'create-project', 'venusian/venusian:^0.10.0', $directory, '--remove-vcs', '--prefer-dist']
 ```
 
-The skeleton token is `SkeletonPackage::VENUSIAN->value` (`venusian/venusian:^0.8.2`), not `^0.8.0`.
+The skeleton token is `SkeletonPackage::VENUSIAN->value` (`venusian/venusian:^0.10.0`).
 
 # create
 

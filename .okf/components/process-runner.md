@@ -5,8 +5,8 @@ description: Thin Symfony Process wrapper — run/succeeds/output with an inject
 resource: src/ProcessRunner.php
 tags: [component, process]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: runner
@@ -29,7 +29,7 @@ Used by [PackagistReleaseWatcher](packagist-release-watcher.md) for `composer gl
 | `succeeds(...)` | `true` iff `run(...) === 0` |
 | `output(...)` | `trim($process->getOutput())` when exit code is `0`; `null` when exit code is `null` or non-zero |
 
-`run()` forwards `$outputCallback` unless `inheritTty` is true **and** TTY attach succeeds. TTY attach (`canInheritTty` / `setTty`) is not Pest-covered; do not treat it as a guaranteed path.
+`run()` forwards `$outputCallback` unless `inheritTty` is true **and** TTY attach succeeds. TTY attach (`canInheritTty` / `setTty`) has no Pest test; when it fails, `run()` falls back to the callback path.
 
 # Related
 

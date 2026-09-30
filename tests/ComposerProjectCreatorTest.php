@@ -14,7 +14,7 @@ it('builds create-project argv with the venusian skeleton pin and dist flags', f
     expect($creator->buildCreateProjectCommand('/usr/bin/composer', '/tmp/demo'))->toBe([
         '/usr/bin/composer',
         'create-project',
-        'venusian/venusian:^0.8.2',
+        'venusian/venusian:^0.10.0',
         '/tmp/demo',
         '--remove-vcs',
         '--prefer-dist',
@@ -102,7 +102,7 @@ it('invokes the output callback with process buffer', function () {
         ->and($capturedCommand)->toBe([
             '/usr/bin/composer',
             'create-project',
-            'venusian/venusian:^0.8.2',
+            'venusian/venusian:^0.10.0',
             '/tmp/demo',
             '--remove-vcs',
             '--prefer-dist',

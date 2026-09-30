@@ -5,8 +5,8 @@ description: PocketFlow wiring for venusian new — Start → ComposerFinder →
 resource: src/Console/Commands/NewApplicationCommand.php
 tags: [core, pocketflow, flow, new]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: command
@@ -60,7 +60,7 @@ Wiring in `NewApplicationCommand::execute`:[^command]
 |-----|---------|------------------|
 | `success` | `null` | Finder miss → `false`. Creation `post` → `exit === 0`. |
 | `name` | trimmed `name` argument | — |
-| `actions` | `[]` | Nobody in this reconstitution. See [known gaps](/known-gaps.md). |
+| `actions` | `[]` | No node writes it. |
 | `interactive` | `$input->isInteractive()` | — |
 | `output_callback` | writes process buffer to `$output` | Passed through creation `prep`. |
 | `directory` | unset | Start `post` sets it from the node constructor. |
@@ -88,7 +88,7 @@ Builds:[^create][^flow-test]
 [
   composer_binary,
   'create-project',
-  'venusian/venusian:^0.8.2',
+  'venusian/venusian:^0.10.0',
   directory,
   '--remove-vcs',
   '--prefer-dist',

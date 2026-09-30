@@ -5,8 +5,8 @@ description: Symfony Console command `new` that scaffolds a Venusian app via Poc
 resource: src/Console/Commands/NewApplicationCommand.php
 tags: [component, command, new]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: command
@@ -44,9 +44,9 @@ After the flow, the command inspects `$shared['success']`:[^command]
 | other (including initial `null`) | `Installation Incomplete` (type `warning`) |
 | key missing | `Installation Returned Malformed Response` (type `warn`) |
 
-`execute()` always `return 0` after the callout. That exit-code choice is **not** Pest-covered; see [known gaps](/known-gaps.md).
+`execute()` returns `0` after every callout, failure included. No Pest test covers `execute()`: it builds its nodes itself, and `ComposerFinderNode` runs a real `ExecutableFinder`.
 
-Constructor-injected `ComposerProjectCreator` and `Filesystem` are unused by `execute()` (creation runs inside `ProjectCreationNode`). See [known gaps](/known-gaps.md).
+The constructor takes optional `ComposerProjectCreator` and `Filesystem`; `execute()` uses neither (creation runs inside `ProjectCreationNode`).
 
 # Related
 

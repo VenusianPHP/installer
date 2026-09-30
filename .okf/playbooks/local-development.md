@@ -4,8 +4,8 @@ title: Local development
 description: Install and test this installer checkout with Pest v4. No venusian/framework clone is required.
 tags: [playbook, pest, composer, development]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: composer
@@ -44,9 +44,9 @@ This package does **not** path-repo `venusian/framework`. Tests are package-leve
 vendor/bin/pest
 ```
 
-`composer.json` `require-dev` is `pestphp/pest` `^4` and `mockery/mockery` `^1.6`. This audit resolved `pestphp/pest` `v4.7.8`. Specs live under `tests/` (`Venusian\Installer\Tests\`). They must not hit the network or exec a real `composer`.[^pest]
+`composer.json` `require-dev` is `pestphp/pest` `^4` and `mockery/mockery` `^1.6`. Specs live under `tests/` (`Venusian\Installer\Tests\`). They do not hit the network or exec `composer`; `BinaryTest` runs `bin/venusian` with the update check off.[^pest]
 
-Named Pest files (33 `it()` cases):
+Named Pest files (36 `it()` cases):
 
 | File | `it()` count |
 |------|----------------|
@@ -57,6 +57,8 @@ Named Pest files (33 `it()` cases):
 | `tests/ComposerProjectCreatorTest.php` | 5 |
 | `tests/ProcessRunnerTest.php` | 7 |
 | `tests/ReleaseChannel/PackagistReleaseWatcherTest.php` | 6 |
+| `tests/Console/ApplicationTest.php` | 1 |
+| `tests/BinaryTest.php` | 2 |
 
 CI (`.github/workflows/tests.yml`) runs `vendor/bin/pest` on PHP `8.4` and `8.5` (`actions/checkout@v7`). `composer.lock` is gitignored; the workflow uses `composer update`.
 
@@ -65,7 +67,6 @@ To try `venusian new` against a local skeleton checkout, add a Composer path rep
 # Related
 
 - [Package](/orientation/package.md)
-- [Known gaps](/known-gaps.md)
 
 [^composer]: Package require / autoload-dev / bin
 [^bin]: Local CLI entry

@@ -4,8 +4,8 @@ use Venusian\Installer\Enums\InstallerPackage;
 use Venusian\Installer\Enums\InstallerReleaseChannel;
 use Venusian\Installer\Enums\SkeletonPackage;
 
-it('pins SkeletonPackage::VENUSIAN to venusian/venusian:^0.8.2', function () {
-    expect(SkeletonPackage::VENUSIAN->value)->toBe('venusian/venusian:^0.8.2');
+it('pins SkeletonPackage::VENUSIAN to venusian/venusian:^0.10.0', function () {
+    expect(SkeletonPackage::VENUSIAN->value)->toBe('venusian/venusian:^0.10.0');
 });
 
 it('exposes every InstallerPackage case value including leftover branding', function () {

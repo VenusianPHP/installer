@@ -2,25 +2,25 @@
 okf_version: "0.2"
 status: stable
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 ---
 
 # venusian/installer Knowledge Bundle
 
-Package knowledge for `venusian/installer` (global Composer CLI that scaffolds Venusian apps, v0.8.0). Successor of `scrapyard-io/installer`.
+Package knowledge for `venusian/installer` (global Composer CLI that scaffolds Venusian apps, v0.10.0). Successor of `scrapyard-io/installer`.
 Read this index first; open only the concepts needed for the task.
 
-**Trust rule:** Prefer `status: stable`. Treat `deprecated` as historical only. Agent tree-verification sets `status: stable` plus `verified` + `verification_key`. This audit does not invent a `human:` stamp.
+**Trust rule:** Prefer `status: stable`. Treat `deprecated` as historical only. A concept re-checked against the tree carries `verified` + `verification_key` (`<agent>@<commit>`) and `status: stable`; a concept an agent creates stays `draft` until a human verifies it.
 **Placement:** Package-root `.okf/` only — not under `src/` or `tests/`.
 **Scope:** This installer package only. Voyager domain rules live in `venusian/framework` OKF. Probe REPL knowledge lives in `venusian/probe` OKF.
-**Assertion rule:** Behavioral claims in [core](core/node-orchestration.md) and [components](components/) map to named Pest tests. Unbacked runtime claims live in [traps](traps/stale-branding.md), [traps](traps/release-watcher-network.md), or [known gaps](known-gaps.md).
-**Version note:** Claims track installer **0.8.0**. Skeleton pin is `venusian/venusian:^0.8.2` (not `^0.8.0`).
-**Agent audit:** Tree-checked at `693b56c0cf3a622988e1f7b8147370aec9ba492f`. See [log](log.md).
+**Assertion rule:** Behavioral claims name the Pest test that backs them; a claim without one says so in place.
+**Version note:** Claims track installer **0.10.0**. Skeleton pin is `venusian/venusian:^0.10.0`.
+**Verified:** against the tree at `1ce46f6`. See [log](log.md).
 
 # Orientation
 
-* [Package (0.8)](orientation/package.md) - Composer identity, namespace, bin, role vs framework/probe. (`stable`)
+* [Package](orientation/package.md) - Composer identity, namespace, bin, role vs framework/probe. (`stable`)
 
 # Core
 
@@ -36,19 +36,10 @@ Read this index first; open only the concepts needed for the task.
 * [ResolveDirectory](components/resolve-directory.md) - `.` / absolute / relative path resolution. (`stable`)
 * [PrepareSharedBag](components/prepare-shared-bag.md) - Initial `$shared` keys for the flow. (`stable`)
 * [Enums](components/enums.md) - `SkeletonPackage`, `InstallerPackage`, `InstallerReleaseChannel`. (`stable`)
-* [Application](components/application.md) - Symfony Console app; release watcher hook. (`stable`)
+* [Application](components/application.md) - Symfony Console app; release watcher hook; `bin/venusian`. (`stable`)
 
 # Playbooks
 
 * [Playbooks](playbooks/) - How to run `venusian new` and develop this checkout.
 * [New application](playbooks/new-application.md) - Run `venusian new`; disable the update check. (`stable`)
 * [Local development](playbooks/local-development.md) - Pest, `php bin/venusian`, path-repo notes. (`stable`)
-
-# Traps
-
-* [Stale branding](traps/stale-branding.md) - `ScrapyardIO` / `scrapyard-io` leftovers still in source. (`stable`)
-* [Release watcher network](traps/release-watcher-network.md) - Skip rules, cache TTL, injected HTTP. (`stable`)
-
-# Gaps
-
-* [Known gaps](known-gaps.md) - AGENTS.md drift, unused injections, empty `actions` bag, missing canvas/mermaid/CHANGELOG. (`stable`)

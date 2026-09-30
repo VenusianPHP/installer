@@ -5,8 +5,8 @@ description: String- and int-backed enums for skeleton pin, Packagist identity, 
 resource: src/Enums
 tags: [component, enum]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "agent:framework-auditor", at: "2026-08-23T17:31:14Z" }
-verification_key: "agent:framework-auditor@693b56c0cf3a622988e1f7b8147370aec9ba492f"
+verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
+verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
 status: stable
 sources:
   - id: skeleton
@@ -31,9 +31,9 @@ Backed PHP enums under `src/Enums/`. Cases are FULLY UPPERCASE. No class-level c
 
 | Case | Value |
 |------|-------|
-| `VENUSIAN` | `venusian/venusian:^0.8.2` |
+| `VENUSIAN` | `venusian/venusian:^0.10.0` |
 
-This is the create-project token. Not `^0.8.0`.[^skeleton][^enums-test]
+This is the create-project token.[^skeleton][^enums-test]
 
 # InstallerPackage (`string`)
 
@@ -47,7 +47,7 @@ This is the create-project token. Not `^0.8.0`.[^skeleton][^enums-test]
 | `CACHE_LAST_MODIFIED_FILENAME` | `venusian-installer-last-modified` |
 | `NO_UPDATE_CHECK_ENV` | `VENUSIAN_INSTALLER_NO_UPDATE_CHECK` |
 
-`USER_AGENT` is a leftover brand string. Tests assert the literal so a rename is visible. See [stale branding](/traps/stale-branding.md).[^package][^enums-test]
+`USER_AGENT` is the `User-Agent` header on the Packagist request; `exposes every InstallerPackage case value including leftover branding` asserts it.[^package][^enums-test]
 
 # InstallerReleaseChannel (`int`)
 

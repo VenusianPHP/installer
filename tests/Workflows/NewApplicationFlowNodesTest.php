@@ -54,7 +54,7 @@ it('builds the skeleton create-project command in project creation prep', functi
     expect($prep['command'])->toBe([
         '/usr/bin/composer',
         'create-project',
-        'venusian/venusian:^0.8.2',
+        'venusian/venusian:^0.10.0',
         '/tmp/demo',
         '--remove-vcs',
         '--prefer-dist',

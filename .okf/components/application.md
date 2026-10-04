@@ -14,7 +14,7 @@ sources:
     title: Venusian\\Installer\\Console\\Application
   - id: bin
     resource: bin/venusian
-    title: Entrypoint constructs Application 0.10.0
+    title: Entrypoint constructs Application 0.10.2
   - id: watcher
     resource: src/ReleaseChannel/PackagistReleaseWatcher.php
     title: maybeOfferUpdate
@@ -33,7 +33,7 @@ sources:
 
 `Venusian\Installer\Console\Application` extends `Symfony\Component\Console\Application`.[^app]
 
-`bin/venusian` constructs `new Application('Venusian PHP Application Installer', '0.10.0')` and registers [NewApplicationCommand](new-application-command.md).[^bin]
+`bin/venusian` constructs `new Application('Venusian PHP Application Installer', '0.10.2')` and registers [NewApplicationCommand](new-application-command.md).[^bin]
 
 # doRun
 
@@ -59,7 +59,7 @@ The watcher is constructor-injectable (`?PackagistReleaseWatcher $releaseWatcher
 - [Package](/orientation/package.md)
 
 [^app]: Venusian\\Installer\\Console\\Application
-[^bin]: Entrypoint constructs Application 0.10.0
+[^bin]: Entrypoint constructs Application 0.10.2
 [^watcher]: maybeOfferUpdate
 [^watcher-test]: Pest coverage for the watcher itself
 [^app-test]: Pest coverage for doRun ordering and arguments

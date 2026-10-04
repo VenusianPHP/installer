@@ -14,9 +14,9 @@ Before changing installer code or advising on `venusian new`:
 6. Framework, skeleton, and probe knowledge belongs in those packages' own `.okf` bundles, not here.
 7. The README carries a mermaid overview of the `new` flow; keep it in step with [.okf/core/node-orchestration.md](.okf/core/node-orchestration.md).
 
-## Package rules (quick) — 0.10.0
+## Package rules (quick) — 0.10.2
 
-- Composer: `venusian/installer` **0.10.0**. PHP `^8.4|^8.5|^8.6`. Global Composer CLI; bin is `bin/venusian` (Symfony Console app).
+- Composer: `venusian/installer` **0.10.2**. PHP `^8.4|^8.5|^8.6`. Global Composer CLI; bin is `bin/venusian` (Symfony Console app).
 - `bin/venusian` passes the version to `Application`; it must equal `composer.json` `version` (`tests/BinaryTest.php` enforces it).
 - From a checkout: `composer install` then `php bin/venusian` shows the command list (`new` is registered).
 - Orchestration uses `projectsaturnstudios/pocketflow-php`: `new` runs a Flow of Start → ComposerFinder → ProjectCreation → ExtensionsFlow. See [.okf/core/node-orchestration.md](.okf/core/node-orchestration.md).

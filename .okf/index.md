@@ -8,7 +8,7 @@ verification_key: "claude-fable-5-1@6689f865c8b40863d13dc520135c0217579d3224"
 
 # venusian/installer Knowledge Bundle
 
-Package knowledge for `venusian/installer` (global Composer CLI that scaffolds Venusian apps, v0.10.0). Successor of `scrapyard-io/installer`.
+Package knowledge for `venusian/installer` (global Composer CLI that scaffolds Venusian apps, v0.10.2). Successor of `scrapyard-io/installer`.
 Read this index first; open only the concepts needed for the task.
 
 **Trust rule:** Prefer `status: stable`. Treat `deprecated` as historical only. A concept re-checked against the tree carries `verified` + `verification_key` (`<agent>@<commit>`) and `status: stable`; a concept an agent creates stays `draft` until a human verifies it.

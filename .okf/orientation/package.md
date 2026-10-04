@@ -1,7 +1,7 @@
 ---
 type: Orientation
 title: Package
-description: venusian/installer 0.10.0 — global Composer CLI that scaffolds Venusian PHP applications.
+description: venusian/installer 0.10.2 — global Composer CLI that scaffolds Venusian PHP applications.
 resource: composer.json
 tags: [orientation, installer, venusian, 0.10]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
@@ -25,12 +25,12 @@ sources:
 
 # What it is
 
-Composer package `venusian/installer` at **0.10.0** — a globally installable Symfony Console CLI (not a full Symfony HTTP app) whose bin is `bin/venusian`. Successor of `scrapyard-io/installer`.[^composer][^bin]
+Composer package `venusian/installer` at **0.10.2** — a globally installable Symfony Console CLI (not a full Symfony HTTP app) whose bin is `bin/venusian`. Successor of `scrapyard-io/installer`.[^composer][^bin]
 
 | Field | Value |
 |-------|-------|
 | Name | `venusian/installer`[^composer] |
-| Version | `0.10.0`[^composer] |
+| Version | `0.10.2`[^composer] |
 | PHP | `^8.4\|^8.5\|^8.6`[^composer] |
 | Namespace | `Venusian\Installer\` → `src/`[^composer] |
 | Bin | `bin/venusian`[^composer][^bin] |
@@ -61,7 +61,7 @@ Does **not** require `venusian/framework` or `venusian/probe`.[^composer]
 
 | Path | Role |
 |------|------|
-| `bin/venusian` | Console entry (`Application` 0.10.0 + `NewApplicationCommand`); version equals `composer.json` (`BinaryTest`) |
+| `bin/venusian` | Console entry (`Application` 0.10.2 + `NewApplicationCommand`); version equals `composer.json` (`BinaryTest`) |
 | `src/Console/Application.php` | `doRun` → Packagist self-update offer |
 | `src/Console/Commands/NewApplicationCommand.php` | `new` flow host |
 | `src/Enums/SkeletonPackage.php` | Skeleton Composer constraint |

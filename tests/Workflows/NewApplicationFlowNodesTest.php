@@ -15,14 +15,14 @@ it('sets shared.directory in start post and returns find-composer', function () 
         ->and($action)->toBe('find-composer');
 });
 
-it('sets composer_binary and returns default when the finder hits', function () {
+it('sets composer_binary and returns create-project when the finder hits', function () {
     $node = new ComposerFinderNode;
     $shared = [];
 
     $action = $node->post($shared, null, '/usr/bin/composer');
 
     expect($shared['composer_binary'])->toBe('/usr/bin/composer')
-        ->and($action)->toBe('default')
+        ->and($action)->toBe('create-project')
         ->and($shared)->not->toHaveKey('success')
         ->and($shared)->not->toHaveKey('errors');
 });
@@ -63,7 +63,7 @@ it('builds the skeleton create-project command in project creation prep', functi
         ->and($prep['output_callback'])->toBe($callback);
 });
 
-it('sets success true on project creation post when the exit code is 0', function () {
+it('sets success true and returns offer-extensions on project creation post when the exit code is 0', function () {
     $process = Mockery::mock(Process::class);
     $process->shouldReceive('getExitCode')->once()->andReturn(0);
     $process->shouldNotReceive('getExitCodeText');
@@ -73,7 +73,7 @@ it('sets success true on project creation post when the exit code is 0', functio
 
     expect($shared['success'])->toBeTrue()
         ->and($shared)->not->toHaveKey('errors')
-        ->and($action)->toBeNull();
+        ->and($action)->toBe('offer-extensions');
 });
 
 it('sets success false and errors on project creation post when the exit code is non-zero', function () {

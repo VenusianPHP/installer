@@ -2,6 +2,7 @@
 <?php
 
 use Venusian\Installer\Console\Application;
+use Venusian\Installer\Console\Commands\InstallExtensionCommand;
 use Venusian\Installer\Console\Commands\NewApplicationCommand;
 
 if (file_exists(__DIR__.'/../../../autoload.php')) {
@@ -12,6 +13,7 @@ if (file_exists(__DIR__.'/../../../autoload.php')) {
 
 $app = new Application('Venusian PHP Application Installer', '0.10.0');
 $app->addCommand(new NewApplicationCommand);
+$app->addCommand(new InstallExtensionCommand);
 
 try {
     exit($app->run());

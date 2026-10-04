@@ -27,5 +27,6 @@ it('registers the new command in bin/venusian', function () {
     $process->run();
 
     expect($process->getExitCode())->toBe(0)
-        ->and($process->getOutput())->toMatch('/^new\s+Create a new Venusian PHP application$/m');
+        ->and($process->getOutput())->toMatch('/^new\s+Create a new Venusian PHP application$/m')
+        ->and($process->getOutput())->toMatch('/^install:ext\s+Install Venusian\'s first-party PHP extensions through PIE$/m');
 });

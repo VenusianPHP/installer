@@ -21,7 +21,7 @@ class ComposerFinderNode extends Node
     {
         if(!is_null($exec_res)) {
             $shared['composer_binary'] = $exec_res;
-            return 'default';
+            return 'create-project';
         }
         else
         {

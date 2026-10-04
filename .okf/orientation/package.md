@@ -5,8 +5,8 @@ description: venusian/installer 0.10.0 — global Composer CLI that scaffolds Ve
 resource: composer.json
 tags: [orientation, installer, venusian, 0.10]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
-verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
+verified: { by: "claude-fable-5-1", at: "2026-10-04T00:00:00Z" }
+verification_key: "claude-fable-5-1@6689f865c8b40863d13dc520135c0217579d3224"
 status: stable
 sources:
   - id: composer
@@ -34,7 +34,7 @@ Composer package `venusian/installer` at **0.10.0** — a globally installable S
 | PHP | `^8.4\|^8.5\|^8.6`[^composer] |
 | Namespace | `Venusian\Installer\` → `src/`[^composer] |
 | Bin | `bin/venusian`[^composer][^bin] |
-| Role | Scaffold a Venusian app via `composer create-project` |
+| Role | Scaffold a Venusian app via `composer create-project`, then offer the first-party PHP extensions through PIE |
 | Skeleton | `venusian/venusian:^0.10.0` (`SkeletonPackage::VENUSIAN`)[^skeleton][^enums-test] |
 
 `.gitattributes` marks `/tests`, `/phpunit.xml`, `/.github`, `/.okf`, `/AGENTS.md`, `/CHANGELOG.md` `export-ignore`. No `CHANGELOG.md` in the tree.
@@ -65,15 +65,19 @@ Does **not** require `venusian/framework` or `venusian/probe`.[^composer]
 | `src/Console/Application.php` | `doRun` → Packagist self-update offer |
 | `src/Console/Commands/NewApplicationCommand.php` | `new` flow host |
 | `src/Enums/SkeletonPackage.php` | Skeleton Composer constraint |
+| `src/Workflows/Extensions/` | `ExtensionsFlow` and its six nodes |
+| `src/Enums/FirstPartyExtension.php` | The extensions offered, as `pie install` tokens |
+| `src/Host.php` | The machine and the running PHP binary |
+| `src/Prompts/` | `ChecklistPrompt`: multi-select with disabled rows |
 | `tests/` | Pest v4 specs (`pestphp/pest` `^4` in `require-dev`) |
 
-# Tree (measured at 1ce46f6)
+# Tree (measured at 6689f86)
 
 | Item | Measured |
 |------|----------|
-| `src/**/*.php` | 14 files |
-| `src/Enums/` | 3 backed enums, all cases FULLY UPPERCASE; no `const` in `src/` |
-| `tests/**/*Test.php` | 9 Pest spec files, 36 `it()` cases |
+| `src/**/*.php` | 27 files |
+| `src/Enums/` | 5 backed enums, all cases FULLY UPPERCASE; no `const` in `src/` |
+| `tests/**/*Test.php` | 15 Pest spec files, 81 `it()` cases; `tests/Fakes/` holds 2 test doubles |
 | `tests/Pest.php` | Pest v4 bootstrap (`Mockery::close()` in `afterEach`) |
 | `bin/` | `bin/venusian` only |
 | Root docs | `README.md` (install, usage, mermaid flow, update opt-out), `SECURITY.md`, `AGENTS.md`, `CLAUDE.md` → `AGENTS.md` |
@@ -85,6 +89,7 @@ Does **not** require `venusian/framework` or `venusian/probe`.[^composer]
 | Topic | Concept |
 |-------|---------|
 | Flow | [Node orchestration](/core/node-orchestration.md) |
+| Extension step | [ExtensionsFlow](/core/extensions-flow.md) |
 | Command | [NewApplicationCommand](/components/new-application-command.md) |
 | Run it | [New application](/playbooks/new-application.md) |
 

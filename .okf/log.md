@@ -1,5 +1,15 @@
 # Directory Update Log
 
+## 2026-10-04
+
+* **Update**: [ExtensionsFlow](core/extensions-flow.md) — an extension with no 0.10 tag installs from `0.10.x-dev`; `extension_tokens`.
+* **Creation**: [InstallExtensionCommand](components/install-extension-command.md) — `install:ext {ext?}` over all eleven `FirstPartyExtension` cases. `status: draft`.
+* **Update**: [ExtensionsFlow](core/extensions-flow.md) — catalog / `ask` / `preselect` / `extension_only`, Packagist release state, non-interactive rules, error containment. [enums](components/enums.md) — eight more cases, `offeredByNew()`, `named()`, `package()`, `line()`. [Host](components/host.md) — `releases()`.
+* **Creation**: [ExtensionsFlow](core/extensions-flow.md), [Host](components/host.md), [ChecklistPrompt](components/checklist-prompt.md), [SummarizeExtensions](components/summarize-extensions.md) — the extension step `new` runs after create-project. `status: draft`.
+* **Update**: [Node orchestration](core/node-orchestration.md) — fourth node `ExtensionsFlow`; rule "named actions, null stops"; finder returns `create-project`, creation returns `offer-extensions`; new bag keys.
+* **Update**: [enums](components/enums.md) — `FirstPartyExtension`, `PiePackage`. [NewApplicationCommand](components/new-application-command.md) — `rtrim` on `name`, success callout carries extension outcomes, `execute()` covered by `NewApplicationCommandTest`. [ProcessRunner](components/process-runner.md) — second caller. [New application](playbooks/new-application.md) — extension step. [Local development](playbooks/local-development.md), [package](orientation/package.md) — 15 files, 81 `it()` cases, 27 source files.
+* **Verification**: updated concepts re-checked against the tree; `verification_key` `claude-fable-5-1@6689f865c8b40863d13dc520135c0217579d3224`.
+
 ## 2026-09-30
 
 * **Update**: Bundle retargeted to **0.10.0** — skeleton pin `venusian/venusian:^0.10.0` in [package](orientation/package.md), [node orchestration](core/node-orchestration.md), [ComposerProjectCreator](components/composer-project-creator.md), [enums](components/enums.md), [new application](playbooks/new-application.md) (now lists what the skeleton's hooks do).

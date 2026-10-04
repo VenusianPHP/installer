@@ -8,11 +8,13 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Venusian\Installer\Actions\PrepareSharedBag;
 use Venusian\Installer\Actions\ResolveDirectory;
+use Venusian\Installer\Actions\SummarizeExtensions;
 use Venusian\Installer\ComposerProjectCreator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Venusian\Installer\Workflows\Extensions\ExtensionsFlow;
 use Venusian\Installer\Workflows\Misc\ComposerFinderNode;
 use Venusian\Installer\Workflows\NewApplication\NewApplicationStartNode;
 use Venusian\Installer\Workflows\NewApplication\ProjectCreationNode;
@@ -44,7 +46,7 @@ class NewApplicationCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $directory = ResolveDirectory::run(
-            trim((string) $input->getArgument('name'), '/\\')
+            rtrim((string) $input->getArgument('name'), '/\\')
         );
 
         $output->writeln("Path for new Venusian PHP application: <info>{$directory}</info>");
@@ -54,8 +56,10 @@ class NewApplicationCommand extends Command
         $start_node = new NewApplicationStartNode($directory);
         $finder_node = new ComposerFinderNode();
         $install_node = new ProjectCreationNode();
+        $extensions_flow = new ExtensionsFlow();
         $start_node->next($finder_node, 'find-composer');
-        $finder_node->next($install_node);
+        $finder_node->next($install_node, 'create-project');
+        $install_node->next($extensions_flow, 'offer-extensions');
 
         new Flow($start_node)->run($shared);
 
@@ -67,6 +71,7 @@ class NewApplicationCommand extends Command
                         label: 'Installation Successful!',
                         content: [
                             "<info>Application ready at {$directory}</info>",
+                            ...SummarizeExtensions::run($shared),
                             "",
                             "",
                             "",

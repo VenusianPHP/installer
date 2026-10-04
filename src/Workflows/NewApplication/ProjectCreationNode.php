@@ -50,8 +50,10 @@ class ProjectCreationNode extends Node
                 'message' => $exec_res->getExitCodeText(),
                 'code' => $exec_res->getExitCode()
             ];
+
+            return null;
         }
 
-        return null;
+        return 'offer-extensions';
     }
 }

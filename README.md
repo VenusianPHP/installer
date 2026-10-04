@@ -13,6 +13,7 @@ The Venusian installer creates new [Venusian PHP](https://venusian.projectsaturn
 
 - PHP 8.4, 8.5 or 8.6
 - [Composer](https://getcomposer.org/download/) on your `PATH`
+- For the optional PHP extensions: a C compiler and your PHP's development files (`phpize`, `php-config`). [PIE](https://github.com/php/pie) does the building; the installer offers to install it when it is missing.
 
 ## Installation
 
@@ -41,15 +42,88 @@ cd example-app
 php rocket hello-world
 ```
 
+### PHP extensions
+
+Once the application exists, an interactive run offers Venusian's first-party PHP extensions:
+
+| Extension | What it gives the framework | Offered on |
+|---|---|---|
+| [epoll](https://packagist.org/packages/php-io-extensions/epoll) | event loop waiting on Linux | Linux |
+| [kqueue](https://packagist.org/packages/php-io-extensions/kqueue) | event loop waiting on macOS | macOS |
+| [pcurl](https://packagist.org/packages/php-io-extensions/pcurl) | HTTP requests that run on the event loop | everywhere but Windows |
+
+The list shows all three. One that belongs to another operating system, or that your PHP already loads, is a disabled row with its reason:
+
+```
+ ┌ Extensions to install ───────────────────────────────────────┐
+ │   – epoll — event loop waiting on Linux (Linux only)         │
+ │ › ◼ kqueue — event loop waiting on macOS                     │
+ │   ◼ pcurl — HTTP requests that run on the event loop         │
+ └──────────────────────────────────────────────────────────────┘
+```
+
+Each selected extension is built and installed by [PIE](https://github.com/php/pie), run by the PHP binary that is running the installer, so the extensions land in that PHP:
+
+```bash
+php pie install php-io-extensions/kqueue:^0.10 --with-php-config=/path/to/that/php-config
+```
+
+- **PIE missing:** the installer asks before downloading `pie.phar` from the [PIE releases](https://github.com/php/pie/releases) to `~/.local/bin/pie`, then has PIE verify its own release attestation. A copy that fails is removed.
+- **sudo:** PIE asks for your password itself when PHP's extension directory is not writable.
+- **Failures:** a failed build is reported in the closing summary and does not undo the application. The framework runs without these extensions.
+- Declining, or a non-interactive run, skips the step.
+
 ```mermaid
-flowchart LR
+flowchart TD
     A[venusian new name] --> B[Resolve directory]
     B --> C{composer on PATH?}
-    C -- yes --> D[composer create-project venusian/venusian]
     C -- no --> E[Installation Failed]
-    D -- exit 0 --> F[Installation Successful]
+    C -- yes --> D[composer create-project venusian/venusian]
     D -- non-zero --> E
+    D -- exit 0 --> G{"Extensions left to install,<br>an interactive run,<br>and the offer accepted?"}
+    G -- no --> F[Installation Successful]
+    G -- yes --> H{php-config for this PHP?}
+    H -- builds for another PHP --> F
+    H -- found or none on the machine --> I{PIE runs under this PHP?}
+    I -- yes --> K[Select extensions]
+    I -- no --> J{Install PIE?}
+    J -- declined or failed --> F
+    J -- installed and verified --> K
+    K -- none selected --> F
+    K -- some selected --> L[pie install, once per extension]
+    L --> F
 ```
+
+### Installing extensions later
+
+`venusian install:ext` installs any of Venusian's first-party PHP extensions, at any time, into the PHP binary running `venusian`:
+
+```bash
+venusian install:ext          # choose from the list
+venusian install:ext imgdec   # install that one
+```
+
+| Extension | What it is | Runs on |
+|---|---|---|
+| epoll | event loop waiting on Linux | Linux |
+| kqueue | event loop waiting on macOS | macOS |
+| pcurl | HTTP requests that run on the event loop | everywhere but Windows |
+| appkit | native macOS windows and controls | macOS |
+| gtk | GTK 4 windows and controls | Linux, macOS |
+| qt | Qt 6 windows and controls | Linux, macOS |
+| fb | framebuffers in C | Linux, macOS |
+| rasterize | shape and text rasterising in C | Linux, macOS |
+| imgdec | PNG, JPEG and TIFF decoding in C | Linux, macOS |
+| posi | POSIX files, terminals and devices | everywhere but Windows |
+| ftdi | FTDI USB adapters: GPIO, I2C, SPI, UART | everywhere but Windows |
+
+The list shows every extension. A row is disabled, with its reason, when the extension belongs to another operating system, when your PHP already loads it, or when Packagist has neither a 0.10 release nor a 0.10 development branch of it. Nothing starts selected.
+
+An extension with no tagged 0.10 release yet installs from its 0.10 development branch (`0.10.x-dev`); its row and its outcome say so.
+
+PIE is found, or offered, exactly as in `venusian new`. Some extensions build against system libraries (GTK 4, Qt 6, libpng, libjpeg, libtiff, libftdi); PIE reports what is missing.
+
+Without a terminal, name the extension: `venusian install:ext posi --no-interaction`. The command exits 0 when everything asked for is installed or there was nothing to install, and 1 otherwise.
 
 ### Updates
 

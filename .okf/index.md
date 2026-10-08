@@ -32,6 +32,7 @@ Read this index first; open only the concepts needed for the task.
 * [Components](components/) - Command, creator, process runner, host, release watcher, actions, prompt, enums, application.
 * [NewApplicationCommand](components/new-application-command.md) - Computer-style `new` command; arg `name`; callout outcomes. (`stable`)
 * [InstallExtensionCommand](components/install-extension-command.md) - `install:ext {ext?}`; whole extension catalog; exit codes. (`draft`)
+* [InstallSdkCommand and ToolCommands](components/install-sdk-command.md) - `install:sdk` requires `venusian/build`; `bin/venusian` adds commands of installed `venusian-tool` packages. (`draft`)
 * [ComposerProjectCreator](components/composer-project-creator.md) - `composer create-project` argv + injectable finder/factory. (`stable`)
 * [ProcessRunner](components/process-runner.md) - Exit-code / succeeds / trimmed stdout helper. (`stable`)
 * [Host](components/host.md) - PHP binary, OS family, loaded extensions, home, executable lookup, download. (`draft`)

@@ -8,6 +8,8 @@ enum InstallerPackage: string
 
     case BINARY = 'venusian';
 
+    case BUILD = 'venusian/build';
+
     case PACKAGIST_P2_URL = 'https://repo.packagist.org/p2/venusian/installer.json';
 
     case USER_AGENT = 'ScrapyardIO Installer';

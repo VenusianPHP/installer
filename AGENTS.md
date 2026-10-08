@@ -25,4 +25,5 @@ Before changing installer code or advising on `venusian new`:
 - `new` creates `venusian/venusian:^0.10.0` via Composer (`--remove-vcs --prefer-dist`).
 - CLI option / package maps live in **string-backed enums** under `src/Enums/` (FULLY UPPERCASE cases), not class constants.
 - Prefer orchestrated setup (plan → stages) over Laravel-style linear setup scripts as features return.
+- `bin/venusian` adds the commands of installed `venusian-tool` packages: `ToolCommands::fromInstalled()` reads `extra.venusian.commands` from each package `Composer\InstalledVersions` lists under that type. `install:sdk` runs `composer global require venusian/build` through `ProcessRunner`; venusian/build declares `build`.
 - Tests: Pest v4, no network, no real `composer` and no real `pie`. `tests/BinaryTest.php` runs `bin/venusian` locally with the update check off; `tests/Console/NewApplicationCommandTest.php` runs `new` against a stand-in `composer` script on a private `PATH`. Prompts are driven with `Prompt::fake()`.

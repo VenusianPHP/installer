@@ -125,6 +125,18 @@ PIE is found, or offered, exactly as in `venusian new`. Some extensions build ag
 
 Without a terminal, name the extension: `venusian install:ext posi --no-interaction`. The command exits 0 when everything asked for is installed or there was nothing to install, and 1 otherwise.
 
+### Build tooling
+
+`venusian install:sdk` installs [`venusian/build`](https://github.com/VenusianPHP/build) globally through Composer. The installer picks up any installed package of Composer type `venusian-tool` and adds the commands it declares under `extra.venusian.commands`, so after `install:sdk` the installer has `build`:
+
+```bash
+venusian install:sdk
+cd example-app
+venusian build          # build/<Name>.app on macOS arm64
+```
+
+See venusian/build's README for the interview, `config/build.php` and what the bundle contains.
+
 ### Updates
 
 On each interactive run the installer checks Packagist, at most once a day, for a newer `venusian/installer`. When one exists it offers to run `composer global require` for it and re-runs your command on the new version. Non-interactive runs skip the check; to skip it in an interactive shell:

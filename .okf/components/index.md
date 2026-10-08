@@ -14,6 +14,7 @@ Public surface of `venusian/installer`.
 
 * [NewApplicationCommand](new-application-command.md) - `new` command; arg `name`; callout outcomes.
 * [InstallExtensionCommand](install-extension-command.md) - `install:ext {ext?}`; whole extension catalog.
+* [InstallSdkCommand and ToolCommands](install-sdk-command.md) - `install:sdk` requires `venusian/build`; discovery of `venusian-tool` packages' commands. (`draft`)
 * [ComposerProjectCreator](composer-project-creator.md) - Injectable `composer create-project` helper.
 * [ProcessRunner](process-runner.md) - Process exit-code / stdout helper.
 * [Host](host.md) - The machine and the PHP binary running the installer.

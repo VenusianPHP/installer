@@ -1,5 +1,9 @@
 # Directory Update Log
 
+## 2026-10-08
+
+* **Creation**: [InstallSdkCommand and ToolCommands](components/install-sdk-command.md) — `install:sdk` runs `composer global require venusian/build`; `bin/venusian` adds the commands of every installed `venusian-tool` package (`extra.venusian.commands`), which is how `venusian build` appears. `InstallerPackage::BUILD`. `status: draft`.
+
 ## 2026-10-04
 
 * **Update**: [ExtensionsFlow](core/extensions-flow.md) — an extension with no 0.10 tag installs from `0.10.x-dev`; `extension_tokens`.

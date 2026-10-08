@@ -3,7 +3,9 @@
 
 use Venusian\Installer\Console\Application;
 use Venusian\Installer\Console\Commands\InstallExtensionCommand;
+use Venusian\Installer\Console\Commands\InstallSdkCommand;
 use Venusian\Installer\Console\Commands\NewApplicationCommand;
+use Venusian\Installer\Tools\ToolCommands;
 
 if (file_exists(__DIR__.'/../../../autoload.php')) {
     require __DIR__.'/../../../autoload.php';
@@ -14,6 +16,14 @@ if (file_exists(__DIR__.'/../../../autoload.php')) {
 $app = new Application('Venusian PHP Application Installer', '0.10.2');
 $app->addCommand(new NewApplicationCommand);
 $app->addCommand(new InstallExtensionCommand);
+$app->addCommand(new InstallSdkCommand);
+
+// Installed venusian-tool packages (venusian/build after install:sdk) add their own commands.
+foreach (ToolCommands::fromInstalled() as $class) {
+    if (class_exists($class)) {
+        $app->addCommand(new $class);
+    }
+}
 
 try {
     exit($app->run());

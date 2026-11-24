@@ -1,13 +1,11 @@
 ---
 type: Module
 title: NewApplicationCommand
-description: Symfony Console command `new` that scaffolds a Venusian app via PocketFlow.
+description: Symfony Console command `new` that scaffolds a Venusian app via PocketFlow, then offers the PHP extensions, Topside and the toolkit SDKs.
 resource: src/Console/Commands/NewApplicationCommand.php
 tags: [component, command, new]
-generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
-verified: { by: "claude-fable-5-1", at: "2026-10-04T00:00:00Z" }
-verification_key: "claude-fable-5-1@6689f865c8b40863d13dc520135c0217579d3224"
-status: stable
+generated: { by: "claude-code/claude-opus-5-5", at: "2026-11-24T00:00:00Z" }
+status: draft
 sources:
   - id: command
     resource: src/Console/Commands/NewApplicationCommand.php
@@ -34,7 +32,7 @@ sources:
 
 `execute()` passes `rtrim((string) $input->getArgument('name'), '/\\')` (trailing only) into [ResolveDirectory](resolve-directory.md), so an absolute path keeps its leading slash. [PrepareSharedBag](prepare-shared-bag.md) stores the same value as `$shared['name']`.[^command][^resolve-test][^command-test]
 
-It then [PrepareSharedBag](prepare-shared-bag.md), wires the [node flow](/core/node-orchestration.md), and `Flow::run($shared)`.[^command][^flow-test]
+It then [PrepareSharedBag](prepare-shared-bag.md) and runs `NewApplicationFlow($directory, $host, $runner)` ([node orchestration](/core/node-orchestration.md)). The constructor takes an optional `Host` and `ProcessRunner`, which tests replace with `FakeHost` and `FakeProcessRunner`.[^command][^flow-test]
 
 # Callout outcomes
 
@@ -42,16 +40,14 @@ After the flow, the command inspects `$shared['success']`:[^command]
 
 | `$shared['success']` | Callout |
 |----------------------|---------|
-| `true` | `Installation Successful!` — "Application ready at {$directory}", then [SummarizeExtensions](summarize-extensions.md) (extension outcomes, or why the step ended) |
+| `true` | `Installation Successful!` — "Application ready at {$directory}", then [SummarizeSteps](summarize-steps.md) (PHP extensions, Topside, toolkit SDKs: outcomes, or why each step ended) |
 | `false` | `Installation Failed` (type `error`) — key/value list of `$shared['errors']` (fallback `"Unknown" => "No Message Provided"`) |
 | other (including initial `null`) | `Installation Incomplete` (type `warning`) |
-| key missing | `Installation Returned Malformed Response` (type `warn`) |
+| key missing | `Installation Returned Malformed Response` (type `warning`) |
 
-`execute()` returns `0` after every callout, failure included.
+`execute()` returns `0` after `Installation Successful!`, whatever became of the optional steps, and `1` after every other callout.
 
-`NewApplicationCommandTest` runs `execute()` whole: `PATH` set to a private directory holding a stand-in `composer` script (or nothing), callouts read from `Prompt::fake()`. Three cases: composer missing, create-project succeeds, create-project fails. The runs are non-interactive, so the extension step ends at its offer; its paths are covered in [ExtensionsFlow](/core/extensions-flow.md).[^command-test]
-
-The constructor takes optional `ComposerProjectCreator` and `Filesystem`; `execute()` uses neither (creation runs inside `ProjectCreationNode`).
+`NewApplicationCommandTest` runs `execute()` whole. Four cases put a stand-in `composer` (or nothing) on a private `PATH`: composer missing, create-project succeeds, a PHP composer run under `PHP_BINARY`, create-project fails. The rest describe the machine with `FakeHost` and answer commands with `FakeProcessRunner`, and cover every path of the [Topside flow](/core/topside-flow.md). Extension-step paths: [ExtensionsFlow](/core/extensions-flow.md).[^command-test]
 
 # Related
 

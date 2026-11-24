@@ -1,6 +1,7 @@
 <?php
 
-use Symfony\Component\Process\Process;
+use Venusian\Installer\Tests\Fakes\FakeHost;
+use Venusian\Installer\Tests\Fakes\FakeProcessRunner;
 use Venusian\Installer\Workflows\Misc\ComposerFinderNode;
 use Venusian\Installer\Workflows\NewApplication\NewApplicationStartNode;
 use Venusian\Installer\Workflows\NewApplication\ProjectCreationNode;
@@ -15,74 +16,65 @@ it('sets shared.directory in start post and returns find-composer', function () 
         ->and($action)->toBe('find-composer');
 });
 
-it('sets composer_binary and returns create-project when the finder hits', function () {
-    $node = new ComposerFinderNode;
+it('runs the composer it finds under the PHP binary running the installer', function () {
+    $node = new ComposerFinderNode(new FakeHost(executables: ['composer' => '/usr/bin/composer']));
     $shared = [];
 
-    $action = $node->post($shared, null, '/usr/bin/composer');
+    $action = $node->_run($shared);
 
-    expect($shared['composer_binary'])->toBe('/usr/bin/composer')
+    expect($shared['composer_command'])->toBe(['/opt/php/bin/php', '/usr/bin/composer'])
         ->and($action)->toBe('create-project')
         ->and($shared)->not->toHaveKey('success')
         ->and($shared)->not->toHaveKey('errors');
 });
 
-it('sets success false and composer errors when the finder misses', function () {
-    $node = new ComposerFinderNode;
+it('sets success false and composer errors when composer is not on PATH', function () {
+    $node = new ComposerFinderNode(new FakeHost);
     $shared = [];
 
-    $action = $node->post($shared, null, null);
+    $action = $node->_run($shared);
 
     expect($shared['success'])->toBeFalse()
         ->and($shared['errors'])->toBe([
             'composer' => 'Could not find the composer executable.',
         ])
         ->and($action)->toBeNull()
-        ->and($shared)->not->toHaveKey('composer_binary');
+        ->and($shared)->not->toHaveKey('composer_command');
 });
 
-it('builds the skeleton create-project command in project creation prep', function () {
-    $callback = static function (string $type, string $buffer): void {};
+it('creates the skeleton project with the composer command and returns offer-extensions', function () {
+    $runner = new FakeProcessRunner(fn (array $command): array => [0, 'creating']);
+    $printed = [];
     $shared = [
-        'composer_binary' => '/usr/bin/composer',
+        'composer_command' => ['/opt/php/bin/php', '/usr/bin/composer'],
         'directory' => '/tmp/demo',
-        'output_callback' => $callback,
+        'output_callback' => function (string $type, string $buffer) use (&$printed): void {
+            $printed[] = $buffer;
+        },
     ];
 
-    $prep = (new ProjectCreationNode)->prep($shared);
+    $action = (new ProjectCreationNode($runner))->_run($shared);
 
-    expect($prep['command'])->toBe([
+    expect($runner->commands)->toBe([[
+        '/opt/php/bin/php',
         '/usr/bin/composer',
         'create-project',
-        'venusian/venusian:^0.10.0',
+        'venusian/venusian:^0.11.1',
         '/tmp/demo',
         '--remove-vcs',
         '--prefer-dist',
-    ])
-        ->and($prep['factory'])->toBeCallable()
-        ->and($prep['output_callback'])->toBe($callback);
-});
-
-it('sets success true and returns offer-extensions on project creation post when the exit code is 0', function () {
-    $process = Mockery::mock(Process::class);
-    $process->shouldReceive('getExitCode')->once()->andReturn(0);
-    $process->shouldNotReceive('getExitCodeText');
-
-    $shared = [];
-    $action = (new ProjectCreationNode)->post($shared, null, $process);
-
-    expect($shared['success'])->toBeTrue()
+    ]])
+        ->and($printed)->toBe(['creating'])
+        ->and($shared['success'])->toBeTrue()
         ->and($shared)->not->toHaveKey('errors')
         ->and($action)->toBe('offer-extensions');
 });
 
-it('sets success false and errors on project creation post when the exit code is non-zero', function () {
-    $process = Mockery::mock(Process::class);
-    $process->shouldReceive('getExitCode')->andReturn(2);
-    $process->shouldReceive('getExitCodeText')->once()->andReturn('Misuse of shell builtins');
+it('sets success false and errors when create-project exits non-zero', function () {
+    $runner = new FakeProcessRunner(fn (array $command): array => [2, '']);
+    $shared = ['composer_command' => ['/usr/bin/composer'], 'directory' => '/tmp/demo'];
 
-    $shared = [];
-    $action = (new ProjectCreationNode)->post($shared, null, $process);
+    $action = (new ProjectCreationNode($runner))->_run($shared);
 
     expect($shared['success'])->toBeFalse()
         ->and($shared['errors'])->toBe([

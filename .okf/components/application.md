@@ -14,7 +14,7 @@ sources:
     title: Venusian\\Installer\\Console\\Application
   - id: bin
     resource: bin/venusian
-    title: Entrypoint constructs Application 0.10.2
+    title: Entrypoint constructs Application 0.11.0
   - id: watcher
     resource: src/ReleaseChannel/PackagistReleaseWatcher.php
     title: maybeOfferUpdate
@@ -33,7 +33,7 @@ sources:
 
 `Venusian\Installer\Console\Application` extends `Symfony\Component\Console\Application`.[^app]
 
-`bin/venusian` constructs `new Application('Venusian PHP Application Installer', '0.10.2')` and registers [NewApplicationCommand](new-application-command.md).[^bin]
+`bin/venusian` constructs `new Application('Venusian PHP Application Installer', '0.11.0')` and registers [NewApplicationCommand](new-application-command.md), `InstallExtensionCommand` and `InstallToolkitExtensionCommand` ([install-extension-command](install-extension-command.md)).[^bin]
 
 # doRun
 
@@ -48,7 +48,7 @@ return parent::doRun($input, $output);
 
 # bin/venusian
 
-Loads the global Composer autoloader when installed globally (`../../../autoload.php`), else the checkout's `vendor/autoload.php`. Adds `NewApplicationCommand`; a throw prints its message to STDERR, exit 1. `reports the version composer.json declares from bin/venusian` and `registers the new command in bin/venusian` run it with the update check off.[^bin][^bin-test]
+Loads the global Composer autoloader when installed globally (`../../../autoload.php`), else the checkout's `vendor/autoload.php`. Adds the three commands; a throw prints its message to STDERR, exit 1. `reports the version composer.json declares from bin/venusian` and `registers new, install:ext and install:toolkit-ext in bin/venusian` run it with the update check off.[^bin][^bin-test]
 
 The watcher is constructor-injectable (`?PackagistReleaseWatcher $releaseWatcher = null`).
 
@@ -59,7 +59,7 @@ The watcher is constructor-injectable (`?PackagistReleaseWatcher $releaseWatcher
 - [Package](/orientation/package.md)
 
 [^app]: Venusian\\Installer\\Console\\Application
-[^bin]: Entrypoint constructs Application 0.10.2
+[^bin]: Entrypoint constructs Application 0.11.0
 [^watcher]: maybeOfferUpdate
 [^watcher-test]: Pest coverage for the watcher itself
 [^app-test]: Pest coverage for doRun ordering and arguments

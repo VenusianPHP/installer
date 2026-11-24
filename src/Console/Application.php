@@ -2,9 +2,9 @@
 
 namespace Venusian\Installer\Console;
 
+use Throwable;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 use Venusian\Installer\ReleaseChannel\PackagistReleaseWatcher;
 use Symfony\Component\Console\Application as SymfonyApplication;
 

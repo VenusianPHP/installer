@@ -3,19 +3,28 @@
 use Venusian\Installer\Enums\InstallerPackage;
 use Venusian\Installer\Enums\InstallerReleaseChannel;
 use Venusian\Installer\Enums\SkeletonPackage;
+use Venusian\Installer\Enums\TopsidePackage;
 
-it('pins SkeletonPackage::VENUSIAN to venusian/venusian:^0.10.0', function () {
-    expect(SkeletonPackage::VENUSIAN->value)->toBe('venusian/venusian:^0.10.0');
+it('pins SkeletonPackage::VENUSIAN to venusian/venusian:^0.11.1 and names its console', function () {
+    expect(SkeletonPackage::VENUSIAN->value)->toBe('venusian/venusian:^0.11.1')
+        ->and(SkeletonPackage::CONSOLE->value)->toBe('computer');
 });
 
-it('exposes every InstallerPackage case value including leftover branding', function () {
-    expect(InstallerPackage::COMPOSER->value)->toBe('venusian/installer')
-        ->and(InstallerPackage::BINARY->value)->toBe('venusian')
-        ->and(InstallerPackage::PACKAGIST_P2_URL->value)->toBe('https://repo.packagist.org/p2/venusian/installer.json')
-        ->and(InstallerPackage::USER_AGENT->value)->toBe('ScrapyardIO Installer')
-        ->and(InstallerPackage::CACHE_BODY_FILENAME->value)->toBe('venusian-installer-version-check.json')
-        ->and(InstallerPackage::CACHE_LAST_MODIFIED_FILENAME->value)->toBe('venusian-installer-last-modified')
-        ->and(InstallerPackage::NO_UPDATE_CHECK_ENV->value)->toBe('VENUSIAN_INSTALLER_NO_UPDATE_CHECK');
+it('pins Topside to its 0.11 line and names its config tag', function () {
+    expect(TopsidePackage::COMPOSER->value)->toBe('venusian/topside:^0.11')
+        ->and(TopsidePackage::CONFIG_TAG->value)->toBe('surface-config');
+});
+
+it('exposes every InstallerPackage case value', function () {
+    expect(array_map(fn (InstallerPackage $case): string => $case->value, InstallerPackage::cases()))->toBe([
+        'venusian/installer',
+        'venusian',
+        'https://repo.packagist.org/p2/venusian/installer.json',
+        'Venusian Installer',
+        'venusian-installer-version-check.json',
+        'venusian-installer-last-modified',
+        'VENUSIAN_INSTALLER_NO_UPDATE_CHECK',
+    ]);
 });
 
 it('exposes InstallerReleaseChannel integer cases', function () {

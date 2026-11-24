@@ -70,3 +70,23 @@ it('removes a file', function () {
 
     expect(file_exists("{$this->directory}/pie"))->toBeFalse();
 });
+
+it('runs a PHP script or phar under the PHP binary running it, and anything else as it is', function () {
+    $filesystem = new Filesystem;
+    $filesystem->dumpFile("{$this->directory}/composer", "#!/usr/bin/env php\n<?php\n");
+    $filesystem->dumpFile("{$this->directory}/bare", "<?php\n");
+    $filesystem->dumpFile("{$this->directory}/wrapper", "#!/bin/sh\nexec php \"$@\"\n");
+
+    expect((new Host)->phpCommand("{$this->directory}/composer"))->toBe([PHP_BINARY, "{$this->directory}/composer"])
+        ->and((new Host)->phpCommand("{$this->directory}/bare"))->toBe([PHP_BINARY, "{$this->directory}/bare"])
+        ->and((new Host)->phpCommand('/somewhere/composer.phar'))->toBe([PHP_BINARY, '/somewhere/composer.phar'])
+        ->and((new Host)->phpCommand("{$this->directory}/wrapper"))->toBe(["{$this->directory}/wrapper"])
+        ->and((new Host)->phpCommand("{$this->directory}/missing"))->toBe(["{$this->directory}/missing"]);
+});
+
+it('describes the PHP running it the way its php-config does', function () {
+    expect((new Host)->phpBindir())->toBe(PHP_BINDIR)
+        ->and((new Host)->phpPrefix())->toBe(PHP_PREFIX)
+        ->and((new Host)->phpVersionId())->toBe(PHP_VERSION_ID)
+        ->and((new Host)->threadSafe())->toBe((bool) PHP_ZTS);
+});

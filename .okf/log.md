@@ -1,5 +1,15 @@
 # Directory Update Log
 
+## 2026-11-24
+
+* **Update**: bundle retargeted to **0.11.0** — skeleton `venusian/venusian:^0.11.1`, extensions on `^0.11` ([package](orientation/package.md), [enums](components/enums.md), [new application](playbooks/new-application.md), [local development](playbooks/local-development.md)).
+* **Creation**: [Topside flow](core/topside-flow.md) — after the PHP extensions, `new` offers venusian/topside (require + `vendor:publish --tag=surface-config`), then the toolkit SDKs (extension through PIE, then `jovian/venusian-{toolkit}`). `status: draft`.
+* **Update**: [Node orchestration](core/node-orchestration.md) — `NewApplicationFlow`; composer found through `Host` and run as `Host::phpCommand()` under `PHP_BINARY`; creation through `ProcessRunner`; `composer_command` replaces `composer_binary`.
+* **Update**: [ExtensionsFlow](core/extensions-flow.md) — catalogs `core()` / `toolkits()`; `pick` and `then`; php-config matched by prefix, version and thread safety when `--php-binary` prints `NONE` (Homebrew `php@8.4-zts`); the "builds for another PHP" stop removed.
+* **Update**: [enums](components/enums.md) — `PCURL` → `MULTICURL`; fb, rasterize, imgdec, posi, ftdi dropped; `RAVEN`; `Toolkit`, `TopsidePackage`, `SkeletonPackage::CONSOLE`; `USER_AGENT` `Venusian Installer`. [Host](components/host.md) — `phpCommand()`, build identity. [install-extension-command](components/install-extension-command.md) — `install:toolkit-ext`. [SummarizeSteps](components/summarize-steps.md) (was SummarizeExtensions). [NewApplicationCommand](components/new-application-command.md) — exit 1 on failure, `warning` callout type. [PackagistReleaseWatcher](components/packagist-release-watcher.md) — composer and re-exec under `PHP_BINARY`, `venusian` in the PATH-miss message. [Application](components/application.md) — 0.11.0, three commands.
+* **Deprecation**: [InstallSdkCommand and ToolCommands](components/install-sdk-command.md) — venusian/build decoupled from 0.11.0. [ComposerProjectCreator](components/composer-project-creator.md) — unused by `new`, removed.
+* **Note**: concepts touched today are `status: draft` and carry no `verified` entry until a human verifies them.
+
 ## 2026-10-08
 
 * **Creation**: [InstallSdkCommand and ToolCommands](components/install-sdk-command.md) — `install:sdk` runs `composer global require venusian/build`; `bin/venusian` adds the commands of every installed `venusian-tool` package (`extra.venusian.commands`), which is how `venusian build` appears. `InstallerPackage::BUILD`. `status: draft`.

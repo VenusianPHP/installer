@@ -4,7 +4,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Venusian\Installer\Enums\InstallerPackage;
 use Venusian\Installer\ProcessRunner;
+use Venusian\Installer\Host;
 use Venusian\Installer\ReleaseChannel\PackagistReleaseWatcher;
+use Venusian\Installer\Tests\Fakes\FakeHost;
 
 function packagistP2Body(string $version): string
 {
@@ -40,6 +42,7 @@ function makeReleaseWatcher(array $overrides = []): PackagistReleaseWatcher
         },
         'composerFinder' => static fn (): ?string => '/usr/bin/composer',
         'binaryFinder' => static fn (): ?string => '/usr/local/bin/venusian',
+        'host' => new Host,
     ];
 
     $args = array_merge($defaults, $overrides);
@@ -55,6 +58,7 @@ function makeReleaseWatcher(array $overrides = []): PackagistReleaseWatcher
         terminate: $args['terminate'],
         composerFinder: $args['composerFinder'],
         binaryFinder: $args['binaryFinder'],
+        host: $args['host'],
     );
 }
 
@@ -90,7 +94,7 @@ afterEach(function () {
     }
 });
 
-it('offers an update when latest is greater than installed, then re-execs and terminates', function () {
+it('offers an update when latest is greater than installed, then re-execs on this PHP and terminates', function () {
     $reExecCommand = null;
     $terminateCode = null;
 
@@ -99,6 +103,7 @@ it('offers an update when latest is greater than installed, then re-execs and te
         ->once()
         ->withArgs(function (array $command, ?string $cwd = null, mixed $outputCallback = null, bool $inheritTty = false): bool {
             expect($command)->toBe([
+                '/opt/php/bin/php',
                 '/usr/bin/composer',
                 'global',
                 'require',
@@ -115,6 +120,7 @@ it('offers an update when latest is greater than installed, then re-execs and te
     $confirmLabel = null;
     $watcher = makeReleaseWatcher([
         'processRunner' => $runner,
+        'host' => new FakeHost,
         'cacheDirectory' => $this->cacheDir,
         'httpClient' => function (string $url, array $headers): array {
             expect($url)->toBe(InstallerPackage::PACKAGIST_P2_URL->value);
@@ -149,7 +155,7 @@ it('offers an update when latest is greater than installed, then re-execs and te
     );
 
     expect($confirmLabel)->toBe('Would you like to update now?')
-        ->and($reExecCommand)->toBe(['/usr/local/bin/venusian', 'new', 'demo'])
+        ->and($reExecCommand)->toBe(['/opt/php/bin/php', '/usr/local/bin/venusian', 'new', 'demo'])
         ->and($terminateCode)->toBe(17);
 });
 

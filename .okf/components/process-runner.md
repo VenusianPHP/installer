@@ -34,7 +34,6 @@ Used by [PackagistReleaseWatcher](packagist-release-watcher.md) for `composer gl
 # Related
 
 - [PackagistReleaseWatcher](packagist-release-watcher.md)
-- [ComposerProjectCreator](composer-project-creator.md)
 - [Host](host.md)
 
 [^runner]: ProcessRunner

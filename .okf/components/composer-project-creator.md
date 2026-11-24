@@ -7,7 +7,7 @@ tags: [component, composer, create-project]
 generated: { by: "agent:cursor-grok-4.6", at: "2026-08-23T17:05:00Z" }
 verified: { by: "claude-opus-5-5", at: "2026-09-30T00:00:00Z" }
 verification_key: "claude-opus-5-5@1ce46f6f838641a45ffe4ab85272ad821b312ecd"
-status: stable
+status: deprecated
 sources:
   - id: creator
     resource: src/ComposerProjectCreator.php
@@ -22,6 +22,9 @@ sources:
     resource: tests/ComposerProjectCreatorTest.php
     title: Pest coverage for argv, missing composer, exit code, output callback
 ---
+
+> **Deprecated.** Removed in 0.11.0: `ComposerProjectCreator` and `ComposerNotFoundException` were unused by `new` (creation ran in `ProjectCreationNode`) and are gone; `ProjectCreationNode` now runs composer through `ProcessRunner` ([node orchestration](/core/node-orchestration.md)). The text below describes 0.10.x.
+
 
 # Role
 

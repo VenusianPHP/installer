@@ -25,12 +25,22 @@ class InstallExtensionCommand extends Command
     ) {
         parent::__construct();
 
-        $this->flow ??= new ExtensionsFlow(catalog: FirstPartyExtension::cases(), ask: false, preselect: false);
+        $this->flow ??= new ExtensionsFlow(catalog: static::catalog(), ask: false, preselect: false);
+    }
+
+    /**
+     * The extensions this command offers.
+     *
+     * @return list<FirstPartyExtension>
+     */
+    public static function catalog(): array
+    {
+        return FirstPartyExtension::core();
     }
 
     protected function configure(): void
     {
-        $names = implode(', ', array_map(fn (FirstPartyExtension $extension): string => $extension->extension(), FirstPartyExtension::cases()));
+        $names = implode(', ', array_map(fn (FirstPartyExtension $extension): string => $extension->extension(), static::catalog()));
 
         $this
             ->addArgument('ext', InputArgument::OPTIONAL, "The extension to install ({$names}). Omit it to choose from the list")

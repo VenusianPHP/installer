@@ -5,6 +5,7 @@ namespace Venusian\Installer\ReleaseChannel;
 use Composer\InstalledVersions;
 use Venusian\Installer\Enums\InstallerPackage;
 use Venusian\Installer\Enums\InstallerReleaseChannel;
+use Venusian\Installer\Host;
 use Venusian\Installer\ProcessRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,6 +25,7 @@ class PackagistReleaseWatcher
      * @param  callable(int): void|null  $terminate
      * @param  callable(): (?string)|null  $composerFinder
      * @param  callable(): (?string)|null  $binaryFinder
+     * @param  Host  $host  Runs composer and the re-exec under the PHP binary running the installer.
      */
     public function __construct(
         private ProcessRunner $processRunner = new ProcessRunner,
@@ -36,6 +38,7 @@ class PackagistReleaseWatcher
         private $terminate = null,
         private $composerFinder = null,
         private $binaryFinder = null,
+        private Host $host = new Host,
     ) {
         $finder = new ExecutableFinder;
 
@@ -103,9 +106,10 @@ class PackagistReleaseWatcher
         }
 
         // `require` rewrites the global constraint (update cannot widen ^0.6 → ^0.7).
+        // Composer runs under this PHP, so it resolves the update for the PHP the installer runs on.
         $exitCode = $this->processRunner->run(
             [
-                $composer,
+                ...$this->host->phpCommand($composer),
                 'global',
                 'require',
                 $this->requireConstraint($latest),
@@ -125,12 +129,13 @@ class PackagistReleaseWatcher
         $binary = ($this->binaryFinder)();
         if (is_null($binary) || $binary === '') {
             $output->writeln('');
-            $output->writeln('<error>Updated, but could not find scrapyard-io on PATH. Re-run your command manually.</error>');
+            $output->writeln('<error>Updated, but could not find venusian on PATH. Re-run your command manually.</error>');
 
             return;
         }
 
-        $command = array_merge([$binary], array_slice($argv, 1));
+        // Re-run on this PHP, not the one the bin's shebang finds on PATH.
+        $command = [...$this->host->phpCommand($binary), ...array_slice($argv, 1)];
         $output->writeln('');
         ($this->terminate)(($this->reExec)($command));
     }
@@ -238,7 +243,7 @@ class PackagistReleaseWatcher
     }
 
     /**
-     * Widenable Packagist constraint for `composer global require` (e.g. 0.7.1 → scrapyard-io/installer:^0.7.1).
+     * Widenable Packagist constraint for `composer global require` (e.g. 0.7.1 → venusian/installer:^0.7.1).
      */
     private function requireConstraint(string $latest): string
     {

@@ -18,6 +18,60 @@ class Host
         return PHP_BINARY;
     }
 
+    /** The directory this PHP was configured to install its binaries into. */
+    public function phpBindir(): string
+    {
+        return PHP_BINDIR;
+    }
+
+    /** The --prefix this PHP was configured with. */
+    public function phpPrefix(): string
+    {
+        return PHP_PREFIX;
+    }
+
+    public function phpVersionId(): int
+    {
+        return PHP_VERSION_ID;
+    }
+
+    public function threadSafe(): bool
+    {
+        return (bool) PHP_ZTS;
+    }
+
+    /**
+     * The command that runs a script under the PHP binary running the
+     * installer: [PHP_BINARY, script] for a PHP script or phar, so its
+     * shebang never picks another PHP from PATH; [script] for anything else.
+     *
+     * @return list<string>
+     */
+    public function phpCommand(string $script): array
+    {
+        return $this->isPhpScript($script) ? [$this->phpBinary(), $script] : [$script];
+    }
+
+    private function isPhpScript(string $path): bool
+    {
+        if (str_ends_with(strtolower($path), '.phar')) {
+            return true;
+        }
+
+        $handle = is_file($path) ? @fopen($path, 'rb') : false;
+        if ($handle === false) {
+            return false;
+        }
+
+        $head = (string) fread($handle, 256);
+        fclose($handle);
+
+        $first_line = explode("\n", $head, 2)[0];
+
+        return str_starts_with($head, '<?php')
+            || (str_starts_with($head, '#!') && str_contains($first_line, 'php'));
+    }
+
     /** A PHP_OS_FAMILY value. */
     public function osFamily(): string
     {

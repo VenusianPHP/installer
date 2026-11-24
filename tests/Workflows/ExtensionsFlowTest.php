@@ -63,13 +63,13 @@ it('offers nothing on a non-interactive run', function () {
 it('offers nothing when every extension is installed or belongs to another operating system', function () {
     $runner = runner();
 
-    $shared = runExtensions(new FakeHost(os: 'Darwin', loaded: ['kqueue', 'pcurl']), $runner);
+    $shared = runExtensions(new FakeHost(os: 'Darwin', loaded: ['kqueue', 'multicurl']), $runner);
 
-    expect($shared['extensions_note'])->toBe('Nothing to install: epoll (Linux only), kqueue (installed), pcurl (installed).')
+    expect($shared['extensions_note'])->toBe('Nothing to install: epoll (Linux only), kqueue (installed), multicurl (installed).')
         ->and($shared['extension_states'])->toBe([
-            'php-io-extensions/epoll:^0.10' => 'Linux only',
-            'php-io-extensions/kqueue:^0.10' => 'installed',
-            'php-io-extensions/pcurl:^0.10' => 'installed',
+            'php-io-extensions/epoll:^0.11' => 'Linux only',
+            'php-io-extensions/kqueue:^0.11' => 'installed',
+            'php-io-extensions/multicurl:^0.11' => 'installed',
         ])
         ->and($runner->commands)->toBe([]);
 });
@@ -93,30 +93,30 @@ it('installs every selected extension through PIE under the running PHP binary',
     expect($runner->commands)->toBe([
         [PHP_CONFIG, '--php-binary'],
         [PHP, PIE, '--version'],
-        [PHP, PIE, 'install', 'php-io-extensions/kqueue:^0.10', '--with-php-config='.PHP_CONFIG],
+        [PHP, PIE, 'install', 'php-io-extensions/kqueue:^0.11', '--with-php-config='.PHP_CONFIG],
         [PHP, '--ri', 'kqueue'],
-        [PHP, PIE, 'install', 'php-io-extensions/pcurl:^0.10', '--with-php-config='.PHP_CONFIG],
-        [PHP, '--ri', 'pcurl'],
+        [PHP, PIE, 'install', 'php-io-extensions/multicurl:^0.11', '--with-php-config='.PHP_CONFIG],
+        [PHP, '--ri', 'multicurl'],
     ])
         ->and($runner->on_terminal)->toBe([
-            [PHP, PIE, 'install', 'php-io-extensions/kqueue:^0.10', '--with-php-config='.PHP_CONFIG],
-            [PHP, PIE, 'install', 'php-io-extensions/pcurl:^0.10', '--with-php-config='.PHP_CONFIG],
+            [PHP, PIE, 'install', 'php-io-extensions/kqueue:^0.11', '--with-php-config='.PHP_CONFIG],
+            [PHP, PIE, 'install', 'php-io-extensions/multicurl:^0.11', '--with-php-config='.PHP_CONFIG],
         ])
         ->and($shared['pie_binary'])->toBe(PIE)
         ->and($shared['php_config'])->toBe(PHP_CONFIG)
-        ->and($shared['extensions_selected'])->toBe(['php-io-extensions/kqueue:^0.10', 'php-io-extensions/pcurl:^0.10'])
-        ->and($shared['extension_results'])->toBe(['kqueue' => 'installed', 'pcurl' => 'installed'])
+        ->and($shared['extensions_selected'])->toBe(['php-io-extensions/kqueue:^0.11', 'php-io-extensions/multicurl:^0.11'])
+        ->and($shared['extension_results'])->toBe(['kqueue' => 'installed', 'multicurl' => 'installed'])
         ->and($shared)->not->toHaveKey('extensions_note');
 });
 
 it('shows the other operating system\'s extension and an installed one as disabled rows', function () {
-    $host = new FakeHost(os: 'Linux', loaded: ['pcurl'], executables: ['pie' => PIE]);
+    $host = new FakeHost(os: 'Linux', loaded: ['multicurl'], executables: ['pie' => PIE]);
 
     $shared = runExtensions($host, runner(), [Key::ENTER, Key::ENTER]);
 
     expect(Prompt::strippedContent())->toContain('◼ epoll — event loop waiting on Linux')
         ->and(Prompt::strippedContent())->toContain('– kqueue — event loop waiting on macOS (macOS only)')
-        ->and(Prompt::strippedContent())->toContain('– pcurl — HTTP requests that run on the event loop (installed)')
+        ->and(Prompt::strippedContent())->toContain('– multicurl — HTTP requests that run on the event loop (installed)')
         ->and($shared['extension_results'])->toBe(['epoll' => 'installed']);
 });
 
@@ -151,7 +151,7 @@ it('stops when PIE is missing and installing it is declined', function () {
 });
 
 it('downloads PIE, has it verify itself, and goes on to install with it', function () {
-    $host = new FakeHost(os: 'Linux', home: '/home/dev', loaded: ['pcurl']);
+    $host = new FakeHost(os: 'Linux', home: '/home/dev', loaded: ['multicurl']);
     $runner = runner();
 
     // Accept the offer, accept installing PIE, accept the list.
@@ -161,7 +161,7 @@ it('downloads PIE, has it verify itself, and goes on to install with it', functi
         ->and($host->removed)->toBe([])
         ->and($shared['pie_binary'])->toBe('/home/dev/.local/bin/pie')
         ->and($runner->commands)->toContain([PHP, '/home/dev/.local/bin/pie', 'self-verify'])
-        ->and($runner->commands)->toContain([PHP, '/home/dev/.local/bin/pie', 'install', 'php-io-extensions/epoll:^0.10', '--with-php-config='.PHP_CONFIG])
+        ->and($runner->commands)->toContain([PHP, '/home/dev/.local/bin/pie', 'install', 'php-io-extensions/epoll:^0.11', '--with-php-config='.PHP_CONFIG])
         ->and($shared['extension_results'])->toBe(['epoll' => 'installed']);
 });
 
@@ -216,13 +216,13 @@ it('stops when PIE is missing and there is no home directory to install it into'
 });
 
 it('finds the php-config that sits beside a versioned PHP binary', function () {
-    $host = new FakeHost(php: '/usr/bin/php8.4', os: 'Linux', loaded: ['pcurl'], executables: ['pie' => PIE]);
+    $host = new FakeHost(php: '/usr/bin/php8.4', os: 'Linux', loaded: ['multicurl'], executables: ['pie' => PIE]);
     $runner = runner([['/usr/bin/php-config8.4 --php-binary', 0, '/usr/bin/php8.4']]);
 
     $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
     expect($shared['php_config'])->toBe('/usr/bin/php-config8.4')
-        ->and($runner->commands)->toContain(['/usr/bin/php8.4', PIE, 'install', 'php-io-extensions/epoll:^0.10', '--with-php-config=/usr/bin/php-config8.4']);
+        ->and($runner->commands)->toContain(['/usr/bin/php8.4', PIE, 'install', 'php-io-extensions/epoll:^0.11', '--with-php-config=/usr/bin/php-config8.4']);
 });
 
 it('takes a php-config from PATH when it reports the running PHP binary', function () {
@@ -234,25 +234,62 @@ it('takes a php-config from PATH when it reports the running PHP binary', functi
     expect($shared['php_config'])->toBe('/usr/local/bin/php-config');
 });
 
-it('stops when the only php-config builds for another PHP', function () {
-    $host = new FakeHost(executables: ['pie' => PIE, 'php-config' => '/usr/local/bin/php-config']);
+it('leaves the php-config to PIE when the only one builds for another PHP', function () {
+    $host = new FakeHost(os: 'Linux', loaded: ['multicurl'], executables: ['pie' => PIE, 'php-config' => '/usr/local/bin/php-config']);
     $runner = runner([[PHP_CONFIG.' --php-binary', 127, ''], ['/usr/local/bin/php-config --php-binary', 0, '/usr/local/bin/php']]);
 
-    $shared = runExtensions($host, $runner, [Key::ENTER]);
+    $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
-    expect($shared['extensions_note'])->toBe('The php-config on this machine builds for /usr/local/bin/php, not for '.PHP.'. Install the development files for '.PHP.' first.')
-        ->and($shared)->not->toHaveKey('extension_results')
-        ->and($host->searches)->toBe([['php-config', []]]);
+    expect($shared['php_config'])->toBeNull()
+        ->and($shared)->not->toHaveKey('extensions_note')
+        ->and($runner->commands)->toContain([PHP, PIE, 'install', 'php-io-extensions/epoll:^0.11'])
+        ->and($shared['extension_results'])->toBe(['epoll' => 'installed']);
 });
 
+it('takes the php-config of a PHP built without the CLI in its SAPI list by its prefix, version and thread safety', function () {
+    // Homebrew's php@8.4-zts: its php-config answers --php-binary with NONE.
+    $zts = '/opt/homebrew/Cellar/php@8.4-zts/8.4.27';
+    $host = new FakeHost(php: "{$zts}/bin/php", os: 'Darwin', loaded: ['kqueue'], executables: ['pie' => PIE, 'php-config' => '/opt/homebrew/bin/php-config'], bindir: "{$zts}/bin", prefix: $zts, version_id: 80427, zts: true);
+    $runner = runner([
+        ["{$zts}/bin/php-config --php-binary", 0, 'NONE'],
+        ["{$zts}/bin/php-config --prefix", 0, $zts],
+        ["{$zts}/bin/php-config --vernum", 0, '80427'],
+        ["{$zts}/bin/php-config --extension-dir", 0, "{$zts}/pecl/20240924-zts"],
+        ['/opt/homebrew/bin/php-config --php-binary', 0, '/opt/homebrew/Cellar/php/8.5.12_1/bin/php'],
+    ]);
+
+    $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
+
+    expect($shared['php_config'])->toBe("{$zts}/bin/php-config")
+        ->and($runner->commands)->not->toContain(['/opt/homebrew/bin/php-config', '--php-binary'])
+        ->and($runner->commands)->toContain(["{$zts}/bin/php", PIE, 'install', 'php-io-extensions/multicurl:^0.11', "--with-php-config={$zts}/bin/php-config"]);
+});
+
+it('does not take a php-config that names no binary when it is for another version or thread safety', function (string $vernum, string $extension_dir) {
+    $host = new FakeHost(os: 'Linux', loaded: ['multicurl'], executables: ['pie' => PIE], prefix: '/opt/php', version_id: 80427, zts: false);
+    $runner = runner([
+        [PHP_CONFIG.' --php-binary', 0, 'NONE'],
+        [PHP_CONFIG.' --prefix', 0, '/opt/php'],
+        [PHP_CONFIG.' --vernum', 0, $vernum],
+        [PHP_CONFIG.' --extension-dir', 0, $extension_dir],
+    ]);
+
+    $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
+
+    expect($shared['php_config'])->toBeNull();
+})->with([
+    'another version' => ['80512', '/opt/php/lib/php/extensions/no-debug-non-zts-20250925'],
+    'thread safe' => ['80427', '/opt/php/lib/php/extensions/no-debug-zts-20240924'],
+]);
+
 it('leaves the php-config to PIE when the machine has none', function () {
-    $host = new FakeHost(os: 'Linux', loaded: ['pcurl'], executables: ['pie' => PIE]);
+    $host = new FakeHost(os: 'Linux', loaded: ['multicurl'], executables: ['pie' => PIE]);
     $runner = runner([[PHP_CONFIG.' --php-binary', 127, '']]);
 
     $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
     expect($shared['php_config'])->toBeNull()
-        ->and($runner->commands)->toContain([PHP, PIE, 'install', 'php-io-extensions/epoll:^0.10'])
+        ->and($runner->commands)->toContain([PHP, PIE, 'install', 'php-io-extensions/epoll:^0.11'])
         ->and($shared['extension_results'])->toBe(['epoll' => 'installed']);
 });
 
@@ -262,17 +299,17 @@ it('reports a failed build and still installs the next extension', function () {
 
     $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
-    expect($shared['extension_results'])->toBe(['kqueue' => 'failed (PIE exit code 2)', 'pcurl' => 'installed'])
+    expect($shared['extension_results'])->toBe(['kqueue' => 'failed (PIE exit code 2)', 'multicurl' => 'installed'])
         ->and($runner->commands)->not->toContain([PHP, '--ri', 'kqueue']);
 });
 
 it('reports an extension PIE installed that the PHP binary still does not load', function () {
     $host = new FakeHost(os: 'Darwin', loaded: ['kqueue'], executables: ['pie' => PIE]);
-    $runner = runner([['--ri pcurl', 1, '']]);
+    $runner = runner([['--ri multicurl', 1, '']]);
 
     $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
-    expect($shared['extension_results'])->toBe(['pcurl' => 'installed by PIE, but '.PHP.' does not load it']);
+    expect($shared['extension_results'])->toBe(['multicurl' => 'installed by PIE, but '.PHP.' does not load it']);
 });
 
 it('passes what PIE prints to the output callback when there is no terminal to hand over', function () {
@@ -308,7 +345,7 @@ it('ends with a note, not an exception, when something inside the step throws', 
 it('keeps the outcomes of extensions already installed when a later one throws', function () {
     $host = new FakeHost(os: 'Darwin', executables: ['pie' => PIE]);
     $runner = new FakeProcessRunner(function (array $command): array {
-        if (in_array('php-io-extensions/pcurl:^0.10', $command, true)) {
+        if (in_array('php-io-extensions/multicurl:^0.11', $command, true)) {
             throw new RuntimeException('The process could not be started.');
         }
 
@@ -321,5 +358,5 @@ it('keeps the outcomes of extensions already installed when a later one throws',
 
     $shared = runExtensions($host, $runner, [Key::ENTER, Key::ENTER]);
 
-    expect($shared['extension_results'])->toBe(['kqueue' => 'installed', 'pcurl' => 'failed (The process could not be started.)']);
+    expect($shared['extension_results'])->toBe(['kqueue' => 'installed', 'multicurl' => 'failed (The process could not be started.)']);
 });

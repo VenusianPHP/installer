@@ -3,21 +3,17 @@
 namespace Venusian\Installer\Console\Commands;
 
 use Laravel\Prompts\Elements\Element;
-use ProjectSaturnStudios\PocketFlow\Flow;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Console\Command\Command;
-use Venusian\Installer\Actions\PrepareSharedBag;
-use Venusian\Installer\Actions\ResolveDirectory;
-use Venusian\Installer\Actions\SummarizeExtensions;
-use Venusian\Installer\ComposerProjectCreator;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Venusian\Installer\Workflows\Extensions\ExtensionsFlow;
-use Venusian\Installer\Workflows\Misc\ComposerFinderNode;
-use Venusian\Installer\Workflows\NewApplication\NewApplicationStartNode;
-use Venusian\Installer\Workflows\NewApplication\ProjectCreationNode;
+use Venusian\Installer\Actions\PrepareSharedBag;
+use Venusian\Installer\Actions\ResolveDirectory;
+use Venusian\Installer\Actions\SummarizeSteps;
+use Venusian\Installer\Host;
+use Venusian\Installer\ProcessRunner;
+use Venusian\Installer\Workflows\NewApplication\NewApplicationFlow;
 use function Laravel\Prompts\callout;
 
 #[AsCommand(
@@ -27,13 +23,13 @@ use function Laravel\Prompts\callout;
 class NewApplicationCommand extends Command
 {
     public function __construct(
-        private ?ComposerProjectCreator $projectCreator = null,
-        private ?Filesystem $filesystem = null,
+        private ?Host $host = null,
+        private ?ProcessRunner $runner = null,
     ) {
         parent::__construct();
 
-        $this->projectCreator ??= new ComposerProjectCreator;
-        $this->filesystem ??= new Filesystem;
+        $this->host ??= new Host;
+        $this->runner ??= new ProcessRunner;
     }
 
     protected function configure(): void
@@ -43,6 +39,10 @@ class NewApplicationCommand extends Command
             ;
     }
 
+    /**
+     * Exit 0 once the application exists, whatever became of the optional
+     * steps after it; 1 otherwise.
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $directory = ResolveDirectory::run(
@@ -53,64 +53,58 @@ class NewApplicationCommand extends Command
 
         $shared = PrepareSharedBag::run($input, $output);
 
-        $start_node = new NewApplicationStartNode($directory);
-        $finder_node = new ComposerFinderNode();
-        $install_node = new ProjectCreationNode();
-        $extensions_flow = new ExtensionsFlow();
-        $start_node->next($finder_node, 'find-composer');
-        $finder_node->next($install_node, 'create-project');
-        $install_node->next($extensions_flow, 'offer-extensions');
+        (new NewApplicationFlow($directory, $this->host, $this->runner))->run($shared);
 
-        new Flow($start_node)->run($shared);
-
-        if(array_key_exists('success', $shared))
-        {
-            switch($shared['success']) {
-                case true:
-                    callout(
-                        label: 'Installation Successful!',
-                        content: [
-                            "<info>Application ready at {$directory}</info>",
-                            ...SummarizeExtensions::run($shared),
-                            "",
-                            "",
-                            "",
-                            "Build something amazing!"
-                        ]
-                    );
-                    break;
-
-                case false:
-                    callout(
-                        label: 'Installation Failed',
-                        content: [
-                            "Installer reported the following errors:",
-                            Element::keyValueList($shared['errors'] ?? [
-                                "Unknown" => "No Message Provided",
-                            ]),
-                        ],
-                        type: 'error',
-                    );
-                    break;
-
-                default:
-                    callout(
-                        label: 'Installation Incomplete',
-                        content: 'The installation process was interrupted and could not finish.',
-                        type: 'warning',
-                    );
-            }
-        }
-        else
+        if(!array_key_exists('success', $shared))
         {
             callout('Installation Returned Malformed Response', [
                 'The installer finished with a strange output. ',
                 Element::keyValueList([
                     'shared' => json_encode($shared)
                 ]),
-            ], type: 'warn');
+            ], type: 'warning');
+
+            return Command::FAILURE;
         }
 
-        return 0;
+        switch($shared['success']) {
+            case true:
+                callout(
+                    label: 'Installation Successful!',
+                    content: [
+                        "<info>Application ready at {$directory}</info>",
+                        ...SummarizeSteps::run($shared),
+                        "",
+                        "",
+                        "",
+                        "Build something amazing!"
+                    ]
+                );
+
+                return Command::SUCCESS;
+
+            case false:
+                callout(
+                    label: 'Installation Failed',
+                    content: [
+                        "Installer reported the following errors:",
+                        Element::keyValueList($shared['errors'] ?? [
+                            "Unknown" => "No Message Provided",
+                        ]),
+                    ],
+                    type: 'error',
+                );
+
+                return Command::FAILURE;
+
+            default:
+                callout(
+                    label: 'Installation Incomplete',
+                    content: 'The installation process was interrupted and could not finish.',
+                    type: 'warning',
+                );
+
+                return Command::FAILURE;
+        }
     }
 }

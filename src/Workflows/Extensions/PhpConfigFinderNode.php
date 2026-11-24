@@ -25,49 +25,67 @@ class PhpConfigFinderNode extends Node
     }
 
     /**
-     * Tries the php-config beside the binary (php8.4 → php-config8.4), then the
-     * one on PATH. Each says which binary it builds for.
+     * Tries the php-config in the directory this PHP was configured to
+     * install into, then the one beside the binary (php8.4 → php-config8.4),
+     * then the one on PATH.
      *
-     * @return array{php_config: ?string, other: ?string} `other` is the binary a
-     *                                                     php-config builds for when none builds for this one.
+     * @return ?string The php-config that builds for this PHP, or null.
      */
     public function exec(mixed $prep_res): mixed
     {
         $php = $this->host->phpBinary();
-        $beside = dirname($php).'/'.preg_replace('/php/', 'php-config', basename($php), 1);
-        $other = null;
+        $candidates = array_unique(array_filter([
+            $this->host->phpBindir().'/php-config',
+            dirname($php).'/'.preg_replace('/php/', 'php-config', basename($php), 1),
+            $this->host->find('php-config'),
+        ]));
 
-        foreach (array_unique(array_filter([$beside, $this->host->find('php-config')])) as $candidate) {
-            $builds_for = $this->runner->output([$candidate, '--php-binary']);
-
-            if(is_null($builds_for) || $builds_for === '') {
-                continue;
+        foreach ($candidates as $candidate) {
+            if ($this->buildsForThisPhp($candidate)) {
+                return $candidate;
             }
-
-            if($this->resolved($builds_for) === $this->resolved($php)) {
-                return ['php_config' => $candidate, 'other' => null];
-            }
-
-            $other = $builds_for;
         }
 
-        return ['php_config' => null, 'other' => $other];
+        return null;
     }
 
     /**
-     * With no php-config on the machine the flow goes on: PIE checks for build
-     * tools itself and offers to install PHP's development files.
+     * With none found, no php-config is passed: PIE, which runs under this
+     * PHP, targets the PHP running it, checks for build tools itself and
+     * offers to install PHP's development files.
      */
     public function post(mixed &$shared, mixed $prep_res, mixed $exec_res): mixed
     {
-        if(is_null($exec_res['php_config']) && !is_null($exec_res['other'])) {
-            $php = $this->host->phpBinary();
-            $shared['extensions_note'] = "The php-config on this machine builds for {$exec_res['other']}, not for {$php}. Install the development files for {$php} first.";
-            return null;
+        $shared['php_config'] = $exec_res;
+
+        return 'find-pie';
+    }
+
+    /**
+     * A php-config builds for this PHP when it names this binary, or, when it
+     * names none (a build without the CLI SAPI in its list prints "NONE"),
+     * when its prefix, version and thread safety are this PHP's.
+     */
+    private function buildsForThisPhp(string $php_config): bool
+    {
+        $builds_for = $this->runner->output([$php_config, '--php-binary']);
+
+        if (is_null($builds_for)) {
+            return false;
         }
 
-        $shared['php_config'] = $exec_res['php_config'];
-        return 'find-pie';
+        if ($builds_for !== '' && $builds_for !== 'NONE') {
+            return $this->resolved($builds_for) === $this->resolved($this->host->phpBinary());
+        }
+
+        $prefix = $this->runner->output([$php_config, '--prefix']);
+        $vernum = $this->runner->output([$php_config, '--vernum']);
+        $extension_dir = $this->runner->output([$php_config, '--extension-dir']);
+
+        return ! is_null($prefix) && ! is_null($vernum) && ! is_null($extension_dir)
+            && $this->resolved($prefix) === $this->resolved($this->host->phpPrefix())
+            && (int) $vernum === $this->host->phpVersionId()
+            && str_contains($extension_dir, 'zts') === $this->host->threadSafe();
     }
 
     private function resolved(string $path): string

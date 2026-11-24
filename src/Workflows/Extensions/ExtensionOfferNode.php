@@ -25,7 +25,7 @@ class ExtensionOfferNode extends Node
     ) {
         parent::__construct();
 
-        $this->catalog ??= FirstPartyExtension::offeredByNew();
+        $this->catalog ??= FirstPartyExtension::core();
     }
 
     /** @var array<string, string> What `pie install` takes for each installable extension, by enum value. */
@@ -125,7 +125,7 @@ class ExtensionOfferNode extends Node
      * Why the extension cannot be installed here, or null when it can: the
      * operating system, then whether this PHP already loads it, then what
      * Packagist lists on its line. A tagged release installs as the enum's
-     * value; with none, the line's development branch (0.10.x-dev) installs
+     * value; with none, the line's development branch (0.11.x-dev) installs
      * instead; with neither, the extension cannot be installed. Packagist is
      * asked only for an extension that got that far, and an unanswered
      * question leaves the value as the token: PIE asks again and reports

@@ -35,11 +35,15 @@ class FakeHost extends Host
         public array $unreleased = [],
         public array $absent = [],
         public bool $packagist_answers = true,
+        public string $bindir = '/opt/php/bin',
+        public string $prefix = '/opt/php',
+        public int $version_id = 80427,
+        public bool $zts = false,
     ) {}
 
     /**
      * Every package has a 0.10.0 release, unless named in $unreleased (an old
-     * tag and the 0.10 development branch) or in $absent (not on Packagist).
+     * tag and the 0.11 development branch) or in $absent (not on Packagist).
      */
     public function releases(string $package): ?array
     {
@@ -51,12 +55,38 @@ class FakeHost extends Host
             return [];
         }
 
-        return in_array($package, $this->unreleased, true) ? ['0.8.0', '0.10.x-dev', 'dev-main'] : ['0.10.0', '0.9.0', '0.10.x-dev', 'dev-main'];
+        return in_array($package, $this->unreleased, true) ? ['0.8.0', '0.11.x-dev', 'dev-main'] : ['0.11.0', '0.10.0', '0.11.x-dev', 'dev-main'];
     }
 
     public function phpBinary(): string
     {
         return $this->php;
+    }
+
+    public function phpBindir(): string
+    {
+        return $this->bindir;
+    }
+
+    public function phpPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    public function phpVersionId(): int
+    {
+        return $this->version_id;
+    }
+
+    public function threadSafe(): bool
+    {
+        return $this->zts;
+    }
+
+    /** Every script here is a PHP script. */
+    public function phpCommand(string $script): array
+    {
+        return [$this->php, $script];
     }
 
     public function osFamily(): string

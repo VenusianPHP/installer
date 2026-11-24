@@ -8,32 +8,43 @@ namespace Venusian\Installer\Enums;
  */
 enum FirstPartyExtension: string
 {
-    case EPOLL = 'php-io-extensions/epoll:^0.10';
-    case KQUEUE = 'php-io-extensions/kqueue:^0.10';
-    case PCURL = 'php-io-extensions/pcurl:^0.10';
-    case APPKIT = 'php-io-extensions/appkit:^0.10';
-    case GTK = 'php-io-extensions/gtk:^0.10';
-    case QT = 'php-io-extensions/qt:^0.10';
-    case FB = 'php-io-extensions/fb:^0.10';
-    case RASTERIZE = 'php-io-extensions/rasterize:^0.10';
-    case IMGDEC = 'php-io-extensions/imgdec:^0.10';
-    case POSI = 'php-io-extensions/posi:^0.10';
-    case FTDI = 'php-io-extensions/ftdi:^0.10';
+    case EPOLL = 'php-io-extensions/epoll:^0.11';
+    case KQUEUE = 'php-io-extensions/kqueue:^0.11';
+    case MULTICURL = 'php-io-extensions/multicurl:^0.11';
+    case APPKIT = 'php-io-extensions/appkit:^0.11';
+    case GTK = 'php-io-extensions/gtk:^0.11';
+    case QT = 'php-io-extensions/qt:^0.11';
+    case RAVEN = 'php-io-extensions/raven:^0.11';
 
     /**
-     * The ones `new` offers: what the framework itself picks up when loaded.
+     * The ones the framework itself picks up when loaded: what `new` and
+     * `install:ext` offer.
      *
      * @return list<self>
      */
-    public static function offeredByNew(): array
+    public static function core(): array
     {
-        return [self::EPOLL, self::KQUEUE, self::PCURL];
+        return [self::EPOLL, self::KQUEUE, self::MULTICURL];
     }
 
-    /** The case PHP loads under this name, or null. */
-    public static function named(string $extension): ?self
+    /**
+     * The ones Topside's toolkits run on: what `install:toolkit-ext` offers.
+     *
+     * @return list<self>
+     */
+    public static function toolkits(): array
     {
-        foreach (self::cases() as $case) {
+        return [self::APPKIT, self::GTK, self::QT, self::RAVEN];
+    }
+
+    /**
+     * The case of the catalog PHP loads under this name, or null.
+     *
+     * @param  ?list<self>  $catalog  Every case when null.
+     */
+    public static function named(string $extension, ?array $catalog = null): ?self
+    {
+        foreach ($catalog ?? self::cases() as $case) {
             if ($case->extension() === strtolower($extension)) {
                 return $case;
             }
@@ -54,13 +65,13 @@ enum FirstPartyExtension: string
         return explode(':', $this->value)[0];
     }
 
-    /** The release line the value pins: "0.10" for "^0.10". */
+    /** The release line the value pins: "0.11" for "^0.11". */
     public function line(): string
     {
         return ltrim(explode(':', $this->value)[1], '^');
     }
 
-    /** The token for the line's development branch: "vendor/name:0.10.x-dev". */
+    /** The token for the line's development branch: "vendor/name:0.11.x-dev". */
     public function developmentToken(): string
     {
         return "{$this->package()}:{$this->line()}.x-dev";
@@ -71,20 +82,17 @@ enum FirstPartyExtension: string
         return match ($this) {
             self::EPOLL => 'event loop waiting on Linux',
             self::KQUEUE => 'event loop waiting on macOS',
-            self::PCURL => 'HTTP requests that run on the event loop',
+            self::MULTICURL => 'HTTP requests that run on the event loop',
             self::APPKIT => 'native macOS windows and controls',
             self::GTK => 'GTK 4 windows and controls',
             self::QT => 'Qt 6 windows and controls',
-            self::FB => 'framebuffers in C',
-            self::RASTERIZE => 'shape and text rasterising in C',
-            self::IMGDEC => 'PNG, JPEG and TIFF decoding in C',
-            self::POSI => 'POSIX files, terminals and devices',
-            self::FTDI => 'FTDI USB adapters: GPIO, I2C, SPI, UART',
+            self::RAVEN => 'Raven windows and controls',
         };
     }
 
     /**
-     * Why this operating system cannot have the extension, or null when it can.
+     * Why this operating system cannot have the extension, or null when it
+     * can. The families are the ones each package's composer.json names.
      *
      * @param  string  $os_family  A PHP_OS_FAMILY value.
      */
@@ -93,8 +101,8 @@ enum FirstPartyExtension: string
         return match ($this) {
             self::EPOLL => $os_family === 'Linux' ? null : 'Linux only',
             self::KQUEUE, self::APPKIT => $os_family === 'Darwin' ? null : 'macOS only',
-            self::GTK, self::QT, self::FB, self::RASTERIZE, self::IMGDEC => in_array($os_family, ['Linux', 'Darwin'], true) ? null : 'Linux and macOS only',
-            self::PCURL, self::POSI, self::FTDI => $os_family === 'Windows' ? 'not on Windows' : null,
+            self::GTK, self::QT, self::RAVEN => in_array($os_family, ['Linux', 'Darwin'], true) ? null : 'Linux and macOS only',
+            self::MULTICURL => $os_family === 'Windows' ? 'not on Windows' : null,
         };
     }
 }

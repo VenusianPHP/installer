@@ -1,11 +1,11 @@
 ---
 type: Module
 title: InstallSdkCommand and ToolCommands
-description: `install:sdk` requires venusian/build globally; `bin/venusian` adds the commands every installed venusian-tool package declares.
+description: "`install:sdk` requires venusian/build globally; `bin/venusian` adds the commands every installed venusian-tool package declares."
 resource: src/Console/Commands/InstallSdkCommand.php
 tags: [component, command, build, tools]
 generated: { by: "claude-fable-5-1", at: "2026-10-08T00:00:00Z" }
-status: draft
+status: deprecated
 sources:
   - id: command
     resource: src/Console/Commands/InstallSdkCommand.php
@@ -26,6 +26,9 @@ sources:
     resource: tests/BinaryTest.php
     title: Pest coverage for registration and discovery in bin/venusian
 ---
+
+> **Deprecated.** Removed in 0.11.0: `install:sdk`, `ToolCommands`, the `venusian-tool` discovery loop in `bin/venusian` and `InstallerPackage::BUILD` are gone; venusian/build is decoupled from this release and is to return in a later one. The text below describes 0.10.x.
+
 
 # install:sdk
 

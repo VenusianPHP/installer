@@ -3,13 +3,13 @@
 namespace Venusian\Installer\Workflows\Extensions;
 
 use ProjectSaturnStudios\PocketFlow\Flow;
-use Venusian\Installer\Host;
 use Throwable;
 use Venusian\Installer\Enums\FirstPartyExtension;
+use Venusian\Installer\Host;
 use Venusian\Installer\ProcessRunner;
 
 /**
- * Offers the first-party PHP extensions and installs the chosen ones through
+ * Offers first-party PHP extensions and installs the chosen ones through
  * PIE. A flow of its own, so it can run as one node of a larger flow.
  *
  * Reads from the bag: `interactive`, `output_callback`, and `extension_only`
@@ -17,6 +17,7 @@ use Venusian\Installer\ProcessRunner;
  *
  * Every transition has a name. A node stops the flow by returning null, which
  * PocketFlow reads as "default", and no node here has a default successor.
+ * However it ends, the flow itself returns `$then`, so a larger flow goes on.
  *
  * The step is optional, so nothing it throws leaves it: the error becomes the
  * step's note and the flow that ran it carries on.
@@ -24,9 +25,11 @@ use Venusian\Installer\ProcessRunner;
 class ExtensionsFlow extends Flow
 {
     /**
-     * @param  ?list<FirstPartyExtension>  $catalog  The extensions on offer; the ones `new` offers when null.
+     * @param  ?list<FirstPartyExtension>  $catalog  The extensions on offer; the core ones when null.
      * @param  bool  $ask  Ask before showing the list.
      * @param  bool  $preselect  Start the list with every installable row selected.
+     * @param  bool  $pick  Show the list. When false, every installable extension of the catalog is the selection.
+     * @param  ?string  $then  The action this flow returns when it ends.
      */
     public function __construct(
         Host $host = new Host,
@@ -34,12 +37,14 @@ class ExtensionsFlow extends Flow
         ?array $catalog = null,
         bool $ask = true,
         bool $preselect = true,
+        bool $pick = true,
+        private ?string $then = null,
     ) {
         $offer_node = new ExtensionOfferNode($host, $catalog, $ask);
         $php_config_node = new PhpConfigFinderNode($host, $runner);
         $pie_finder_node = new PieFinderNode($host, $runner);
         $pie_install_node = new PieInstallNode($host, $runner);
-        $select_node = new ExtensionSelectNode($preselect);
+        $select_node = new ExtensionSelectNode($preselect, $pick);
         $install_node = new ExtensionInstallNode($host, $runner);
 
         $offer_node->next($php_config_node, 'find-php-config');
@@ -59,7 +64,12 @@ class ExtensionsFlow extends Flow
         } catch (Throwable $e) {
             $shared['extensions_note'] = "Stopped by an error: {$e->getMessage()}";
 
-            return null;
+            return $this->then;
         }
+    }
+
+    public function post(mixed &$shared, mixed $prep_res, mixed $exec_res): mixed
+    {
+        return $this->then;
     }
 }

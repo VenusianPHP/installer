@@ -10,9 +10,11 @@ class ExtensionSelectNode extends Node
 {
     /**
      * @param  bool  $preselect  Start with every installable row selected.
+     * @param  bool  $pick  Show the list. When false, every installable row is the selection.
      */
     public function __construct(
         private bool $preselect = true,
+        private bool $pick = true,
     ) {
         parent::__construct();
     }
@@ -30,7 +32,8 @@ class ExtensionSelectNode extends Node
      * Every extension is listed. One that cannot be installed here is a
      * disabled row with its reason; one that installs from its development
      * branch says so. An extension named up front is the
-     * selection, and nothing is asked.
+     * selection, and nothing is asked; without the list, so is every
+     * installable one.
      *
      * @return list<string> The selected FirstPartyExtension values.
      */
@@ -38,6 +41,10 @@ class ExtensionSelectNode extends Node
     {
         if(!is_null($prep_res['selected'])) {
             return $prep_res['selected'];
+        }
+
+        if(!$this->pick) {
+            return array_keys(array_filter($prep_res['states'], fn (?string $reason): bool => is_null($reason)));
         }
 
         $options = [];
